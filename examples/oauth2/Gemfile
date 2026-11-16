@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+gem "sumup", path: "../.."
+gem "oauth2", "~> 2.0"
+gem "securerandom", "~> 0.4"
+gem "webrick", "~> 1.9"

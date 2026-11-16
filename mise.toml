@@ -1,0 +1,14 @@
+[tools]
+ruby = "4.0"
+
+[tasks.setup]
+run = "bundle install"
+
+[tasks.check]
+run = "bundle exec rake check"
+
+[tasks.generate]
+run = "bundle exec rake generate"
+
+[tasks.test]
+run = "bundle exec rake test"
