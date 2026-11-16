@@ -93,13 +93,30 @@ and opens or updates a PR for `src/codesamples/ruby.json` in `sumup/sumup-develo
 The release bot needs access to that repository. Adding a Ruby language tab to
 the developer portal is a separate change.
 
-Before the first release, create the `sumup/sumup-ruby` GitHub repository,
-establish ownership of the `sumup` gem name, configure the `rubygems` GitHub
-environment, and register `.github/workflows/publish.yaml` as a trusted publisher
-on RubyGems. The first push may require an initial RubyGems release to establish
-ownership. Configure `SUMUP_BOT_APP_ID` and `SUMUP_BOT_PRIVATE_KEY` for the release
-bot and grant the repository access to the existing API sync automation. No
-long-lived RubyGems API key belongs in this repository.
+Publish the first gem manually to establish ownership. The released trusted
+publishing actions do not yet accept the owner ID required to create a new gem.
+
+1. Keep the release manifest empty until the first release PR. Set
+   `initial-version` to `0.0.1`, and merge the configuration into `main`.
+2. Disable the Publish workflow in GitHub Actions, then merge the `0.0.1` release
+   PR once checks pass. Publish its draft GitHub release as `v0.0.1`.
+3. From a clean checkout of the `v0.0.1` tag, run:
+
+   ```sh
+   bundle install
+   bundle exec rake check build
+   gem signin
+   gem push pkg/sumup-0.0.1.gem
+   ```
+
+4. On RubyGems, configure a trusted publisher on the existing `sumup` gem for
+   repository `sumup/sumup-ruby` and workflow `publish.yaml`. Match the GitHub
+   environment if one is configured. Re-enable the Publish workflow for future
+   releases; do not rerun it for the manually uploaded version.
+
+Configure `SUMUP_BOT_APP_ID` and `SUMUP_BOT_PRIVATE_KEY` for the release bot and
+grant it access to the API sync automation and `sumup-developer`. No long-lived
+RubyGems API key belongs in this repository.
 
 ## Design references
 

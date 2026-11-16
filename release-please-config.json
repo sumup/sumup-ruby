@@ -10,7 +10,7 @@
   "packages": {
     ".": {
       "release-type": "ruby",
-      "initial-version": "0.1.0",
+      "initial-version": "0.0.1",
       "package-name": "sumup",
       "version-file": "lib/sumup/version.rb"
     }
