@@ -83,36 +83,26 @@ manually; CI never charges a card or calls the live API.
 
 ## Releases
 
-Use Conventional Commits. Release Please prepares a draft release PR and updates
-`lib/sumup/version.rb` and `CHANGELOG.md`. A published GitHub release triggers the
-publish workflow, which verifies the tag matches the gem version, reruns checks,
-and publishes via RubyGems Trusted Publishing with attestations.
+Use Conventional Commits. Release Please opens or updates a release PR with the
+next version and changelog. Once its checks pass, merge the release PR. Release
+Please creates the tag and publishes the GitHub release automatically, triggering
+the Publish workflow to upload the gem through RubyGems Trusted Publishing with
+attestations. No local build, manual upload, or draft-release publication is needed.
+
+The Publish workflow checks out the release tag, verifies it matches
+`lib/sumup/version.rb`, and runs `rake check` before uploading. Keep the workflow
+enabled in GitHub Actions. `.release-please-manifest.json` tracks the last released
+version; let Release Please update it and the version file.
 
 The code-sample release workflow generates the catalogue from the release tag
 and opens or updates a PR for `src/codesamples/ruby.json` in `sumup/sumup-developer`.
 The release bot needs access to that repository. Adding a Ruby language tab to
 the developer portal is a separate change.
 
-Publish the first gem manually to establish ownership. The released trusted
-publishing actions do not yet accept the owner ID required to create a new gem.
-
-1. Keep the release manifest empty until the first release PR. Set
-   `initial-version` to `0.0.1`, and merge the configuration into `main`.
-2. Disable the Publish workflow in GitHub Actions, then merge the `0.0.1` release
-   PR once checks pass. Publish its draft GitHub release as `v0.0.1`.
-3. From a clean checkout of the `v0.0.1` tag, run:
-
-   ```sh
-   bundle install
-   bundle exec rake check build
-   gem signin
-   gem push pkg/sumup-0.0.1.gem
-   ```
-
-4. On RubyGems, configure a trusted publisher on the existing `sumup` gem for
-   repository `sumup/sumup-ruby` and workflow `publish.yaml`. Match the GitHub
-   environment if one is configured. Re-enable the Publish workflow for future
-   releases; do not rerun it for the manually uploaded version.
+RubyGems must have a trusted publisher on the existing `sumup` gem for repository
+`sumup/sumup-ruby` and workflow `publish.yaml`. Match the GitHub environment if
+one is configured. The first version, `0.0.1`, was uploaded manually to establish
+ownership; subsequent versions use the standard publishing action.
 
 Configure `SUMUP_BOT_APP_ID` and `SUMUP_BOT_PRIVATE_KEY` for the release bot and
 grant it access to the API sync automation and `sumup-developer`. No long-lived

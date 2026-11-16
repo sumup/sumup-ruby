@@ -2,6 +2,7 @@
 
 # SumUp Ruby SDK
 
+[![RubyGems](https://img.shields.io/gem/v/sumup)](https://rubygems.org/gems/sumup)
 [![CI](https://github.com/sumup/sumup-ruby/actions/workflows/ci.yaml/badge.svg)](https://github.com/sumup/sumup-ruby/actions/workflows/ci.yaml)
 [![Ruby](https://img.shields.io/badge/Ruby-3.3%2B-ruby?logo=ruby)](sumup.gemspec)
 [![Documentation](https://img.shields.io/badge/SumUp-documentation-white)](https://developer.sumup.com)
@@ -14,11 +15,10 @@ Use the SumUp Ruby SDK to create checkouts, manage card readers, and access the
 
 ## Installation
 
-The SDK has not been published yet. Add your local checkout to your application's
-Gemfile:
+Add the SDK to your application's Gemfile:
 
 ```ruby
-gem "sumup", path: "../sumup-ruby"
+gem "sumup"
 ```
 
 Then run `bundle install`.
