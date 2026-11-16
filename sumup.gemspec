@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
     "rubygems_mfa_required" => "true",
     "allowed_push_host" => "https://rubygems.org"
   }
-  spec.add_dependency "json", ">= 2.7", "< 3"
+  spec.add_dependency "json", ">= 2.7", "< 4"
   spec.add_dependency "net-http", ">= 0.4", "< 1"
   spec.add_dependency "openssl", ">= 3.2", "< 5"
 end
