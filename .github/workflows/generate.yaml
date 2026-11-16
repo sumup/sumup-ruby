@@ -1,0 +1,59 @@
+name: Generate
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    branches: [main]
+    paths: [openapi.json]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: generate-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    name: Regenerate SDK after an API sync
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          persist-credentials: false
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+      - run: bundle exec rake generate test signatures
+      - name: Stage generated files
+        id: changes
+        run: |
+          git add lib/sumup/types.rb lib/sumup/resources.rb lib/sumup/resources lib/sumup/event_types.rb sig/sumup/types.rbs sig/sumup/events.rbs sig/sumup/resources code-samples.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create release bot token
+        if: steps.changes.outputs.changed == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.SUMUP_BOT_APP_ID }}
+          private-key: ${{ secrets.SUMUP_BOT_PRIVATE_KEY }}
+          permission-contents: write
+      - name: Commit generated changes
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore: generate SDK"
+          gh auth setup-git --hostname github.com
+          git push origin "HEAD:$TARGET_BRANCH"

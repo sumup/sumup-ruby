@@ -1,0 +1,183 @@
+module SumUp
+  VERSION: String
+  UNSET: Object
+  type request_options = RequestOptions | Hash[Symbol, untyped] | nil
+  type attributes = Hash[Symbol | String, untyped]
+
+  class Model
+    def self.fields: () -> Hash[Symbol, untyped]
+    def self.from_hash: (attributes) -> instance
+    def initialize: (?attributes, **untyped) -> void
+    def []: (String | Symbol) -> untyped
+    def key?: (String | Symbol) -> bool
+    def to_h: () -> Hash[String, untyped]
+    def to_json: (*untyped) -> String
+    def inspect: () -> String
+    def ==: (untyped) -> bool
+  end
+
+  module Types
+    def self.encode: (untyped) -> untyped
+    def self.decode: (untyped, untyped) -> untyped
+  end
+
+  class RequestOptions
+    attr_reader headers: Hash[String | Symbol, String]
+    attr_reader api_key: String?
+    attr_reader timeout: Numeric?
+    attr_reader open_timeout: Numeric?
+    attr_reader max_retries: Integer?
+    def initialize: (?headers: Hash[String | Symbol, String], ?api_key: String?, ?timeout: Numeric?, ?open_timeout: Numeric?, ?max_retries: Integer?) -> void
+    def inspect: () -> String
+  end
+
+  class Request < Data
+    attr_reader method: String
+    attr_reader uri: untyped
+    attr_reader headers: Hash[String, String]
+    attr_reader body: String?
+    attr_reader open_timeout: Numeric
+    attr_reader read_timeout: Numeric
+    attr_reader write_timeout: Numeric
+    def self.new: (method: String, uri: untyped, headers: Hash[String, String], body: String?, open_timeout: Numeric, read_timeout: Numeric, write_timeout: Numeric) -> instance
+  end
+
+  class HTTPResponse < Data
+    attr_reader status: Integer
+    attr_reader headers: Hash[String, String]
+    attr_reader body: String
+    def self.new: (status: Integer, headers: Hash[String, String], body: String) -> instance
+  end
+
+  interface _Transport
+    def call: (Request) -> HTTPResponse
+  end
+
+  class NetHTTPTransport
+    def call: (Request) -> HTTPResponse
+  end
+
+  class Response[out A] < Data
+    attr_reader data: A
+    attr_reader status: Integer
+    attr_reader headers: Hash[String, String]
+    attr_reader body: String
+    def request_id: () -> String?
+    def inspect: () -> String
+  end
+
+  class Client
+    DEFAULT_BASE_URL: String
+    attr_reader base_url: String
+    def initialize: (?api_key: String?, ?base_url: String, ?timeout: Numeric, ?open_timeout: Numeric, ?max_retries: Integer, ?transport: _Transport, ?headers: Hash[String | Symbol, String], ?sleeper: ^(Numeric) -> untyped) -> void
+    def request: (method: String, path: String, ?query: attributes, ?body: untyped, ?options: request_options, ?response_type: untyped, ?with_response: bool) -> untyped
+    def events_handler: (secret: String, fallback: ^(EventNotification) -> untyped) ?{ (EventsHandler) -> untyped } -> EventsHandler
+    def parse_event_notification_without_verification: (String) -> EventNotification
+    def inspect: () -> String
+  end
+
+  class Resource
+    def initialize: (Client) -> void
+    def inspect: () -> String
+  end
+
+  class Error < StandardError
+  end
+  class APIConnectionError < Error
+  end
+  class APITimeoutError < APIConnectionError
+  end
+  class InvalidResponseError < Error
+  end
+  class APIError < Error
+    attr_reader status: Integer
+    attr_reader body: untyped
+    attr_reader headers: Hash[String, String]
+    attr_reader request_id: String?
+    attr_reader problem: Types::Problem?
+    def initialize: (status: Integer, body: untyped, ?headers: Hash[String, String]) -> void
+  end
+  class APIStatusError < APIError
+  end
+  class BadRequestError < APIStatusError
+  end
+  class AuthenticationError < APIStatusError
+  end
+  class PermissionDeniedError < APIStatusError
+  end
+  class NotFoundError < APIStatusError
+  end
+  class ConflictError < APIStatusError
+  end
+  class UnprocessableEntityError < APIStatusError
+  end
+  class RateLimitError < APIStatusError
+  end
+  class InternalServerError < APIStatusError
+  end
+
+  class EventError < Error
+  end
+  class EventSignatureError < EventError
+  end
+  class EventTimestampError < EventSignatureError
+  end
+  class EventSignatureExpiredError < EventSignatureError
+  end
+  class EventPayloadError < EventError
+  end
+  class EventCallbackError < EventError
+  end
+  class EventObjectURLError < EventError
+  end
+
+  class EventNotification
+    attr_reader id: String
+    attr_reader type: String
+    attr_reader created_at: Time
+    attr_reader object: Types::EventObject
+    def fetch_object: (?options: request_options) -> Model
+    def to_h: () -> Hash[String, untyped]
+    def inspect: () -> String
+  end
+  class UnknownEvent < EventNotification
+  end
+
+  module Events
+    SIGNATURE_HEADER: String
+    TOLERANCE_SECONDS: Integer
+    def self.verify_signature: (secret: String, body: String, signature: String?) -> bool
+    def self.parse: (secret: String, body: String, signature: String?, client: Client) -> EventNotification
+    def self.parse_without_verification: (String, client: Client) -> EventNotification
+  end
+
+  class EventsHandler
+    def initialize: (client: Client, secret: String, fallback: ^(EventNotification) -> untyped) -> void
+    def on: (String, ^(EventNotification) -> untyped) -> self
+      | (String) { (EventNotification) -> untyped } -> self
+    def parse: (String, signature: String?) -> EventNotification
+    def handle: (String, signature: String?) -> EventNotification
+    def inspect: () -> String
+  end
+
+  module Resources
+    class Sales < Resource
+      def each: (**untyped) -> Enumerator[Types::Sale, untyped]
+        | (**untyped) { (Types::Sale) -> untyped } -> untyped
+      def search_each: (**untyped) -> Enumerator[Types::SaleSearchItem, untyped]
+        | (**untyped) { (Types::SaleSearchItem) -> untyped } -> untyped
+    end
+    class Transactions < Resource
+      def each: (**untyped) -> Enumerator[Types::TransactionHistory, untyped]
+        | (**untyped) { (Types::TransactionHistory) -> untyped } -> untyped
+    end
+    class Members < Resource
+      def each: (**untyped) -> Enumerator[Types::Member, untyped]
+        | (**untyped) { (Types::Member) -> untyped } -> untyped
+    end
+    class Memberships < Resource
+      def each: (**untyped) -> Enumerator[Types::Membership, untyped]
+        | (**untyped) { (Types::Membership) -> untyped } -> untyped
+    end
+  end
+end

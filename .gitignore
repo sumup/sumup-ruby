@@ -1,0 +1,12 @@
+/.bundle/
+Gemfile.lock
+/vendor/
+/pkg/
+/checksums/
+/doc/
+/.yardoc/
+/coverage/
+*.gem
+.env
+.env.*
+!.env.example

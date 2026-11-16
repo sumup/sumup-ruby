@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, signatures, generation, and packaging
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+      - run: bundle exec rake lint signatures generate:check examples build
+      - name: Load the packaged gem outside the source tree
+        run: |
+          gem install --local --ignore-dependencies --install-dir "$RUNNER_TEMP/sumup-gems" pkg/*.gem
+          cd "$RUNNER_TEMP"
+          GEM_PATH="$RUNNER_TEMP/sumup-gems:$(gem env path)" ruby -rsumup -e 'abort unless SumUp::Client.new.checkouts.is_a?(SumUp::Resources::Checkouts)'
+
+  test:
+    name: Test (Ruby ${{ matrix.ruby }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        ruby: ["3.3", "3.4", "4.0"]
+        include:
+          - os: macos-latest
+            ruby: "4.0"
+          - os: windows-latest
+            ruby: "4.0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - run: bundle exec rake test
+
+  examples:
+    name: Install optional example dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        directory: [examples/oauth2, examples/events]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1
+        with:
+          ruby-version: "4.0"
+          working-directory: ${{ matrix.directory }}
+          bundler-cache: true
+      - name: Load example libraries
+        working-directory: ${{ matrix.directory }}
+        run: bundle exec ruby -rsumup -e 'require "oauth2" if File.exist?("main.rb"); require "rack" if File.exist?("app.rb")'
