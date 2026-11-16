@@ -16,7 +16,6 @@ jobs:
     if: ${{ !github.event.release.prerelease }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: rubygems
     permissions:
       contents: write
       id-token: write
@@ -25,13 +24,21 @@ jobs:
         with:
           ref: refs/tags/${{ github.event.release.tag_name }}
           persist-credentials: false
+
       - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1
         with:
           ruby-version: "4.0"
           bundler-cache: true
+
       - name: Verify release tag
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: ruby -Ilib -rsumup/version -e 'abort "Tag does not match gem version" unless ENV.fetch("RELEASE_TAG") == "v#{SumUp::VERSION}"'
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: codegen/go.mod
+          cache: false
       - run: bundle exec rake check
+
       - uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1

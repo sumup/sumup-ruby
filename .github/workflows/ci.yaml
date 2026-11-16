@@ -26,7 +26,11 @@ jobs:
         with:
           ruby-version: "4.0"
           bundler-cache: true
-      - run: bundle exec rake lint signatures generate:check examples build
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: codegen/go.mod
+          cache: false
+      - run: bundle exec rake lint signatures generate:check codegen:test examples build
       - name: Load the packaged gem outside the source tree
         run: |
           gem install --local --ignore-dependencies --install-dir "$RUNNER_TEMP/sumup-gems" pkg/*.gem
@@ -55,7 +59,11 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - run: bundle exec rake test
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: codegen/go.mod
+          cache: false
+      - run: bundle exec rake codegen:test test
 
   examples:
     name: Install optional example dependencies

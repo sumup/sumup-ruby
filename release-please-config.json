@@ -11,14 +11,7 @@
     ".": {
       "release-type": "ruby",
       "package-name": "sumup",
-      "version-file": "lib/sumup/version.rb",
-      "extra-files": [
-        {
-          "type": "json",
-          "path": "code-samples.json",
-          "jsonpath": "$.sdk.version"
-        }
-      ]
+      "version-file": "lib/sumup/version.rb"
     }
   }
 }

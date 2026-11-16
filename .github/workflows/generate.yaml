@@ -30,11 +30,15 @@ jobs:
         with:
           ruby-version: "4.0"
           bundler-cache: true
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: codegen/go.mod
+          cache: false
       - run: bundle exec rake generate test signatures
       - name: Stage generated files
         id: changes
         run: |
-          git add lib/sumup/types.rb lib/sumup/resources.rb lib/sumup/resources lib/sumup/event_types.rb sig/sumup/types.rbs sig/sumup/events.rbs sig/sumup/resources code-samples.json
+          git add lib/sumup/types.rb lib/sumup/resources.rb lib/sumup/resources lib/sumup/event_types.rb sig/sumup/types.rbs sig/sumup/events.rbs sig/sumup/resources
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else

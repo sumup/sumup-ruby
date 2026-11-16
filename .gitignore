@@ -6,6 +6,7 @@ Gemfile.lock
 /doc/
 /.yardoc/
 /coverage/
+/code-samples.json
 *.gem
 .env
 .env.*

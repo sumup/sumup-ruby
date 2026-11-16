@@ -2,8 +2,9 @@
 
 ## Setup
 
-Use Ruby 4.0 for development, with Bundler and Rake. `mise.toml` and
-`.ruby-version` select the development series. The gem supports Ruby 3.3 and later.
+Use Ruby 4.0 with Bundler and Rake, plus Go 1.26 or later for the generator.
+`mise.toml` selects the development tools. The gem supports Ruby 3.3 and later;
+applications using it do not need Go.
 
 ```sh
 mise install
@@ -20,12 +21,12 @@ versions. Use `bundle update` when validating an update against current releases
 | Path | Responsibility |
 | --- | --- |
 | `openapi.json` | Checked-in input from `sumup/apis/specs/openapi31.json` |
-| `codegen/` | Ruby generator for API methods, models, signatures, events, and samples |
+| `codegen/` | Separate Go module for API methods, models, signatures, events, samples, and generator tests |
 | `lib/sumup/resources/`, `lib/sumup/types.rb` | Generated API surface |
 | `lib/sumup/event_types.rb` | Generated event-to-resource mapping |
 | `lib/sumup/client.rb`, `transport.rb`, `model.rb`, `events.rb`, `pagination.rb` | Shared runtime |
 | `sig/` | Shipped RBS signatures; generated API signatures and handwritten runtime signatures |
-| `test/` | Offline transport, contract, model, event, pagination, and generator tests |
+| `test/` | Offline transport, contract, model, event, pagination, and sample tests |
 | `examples/` | Runnable checkout, reader, OAuth, and Rack event applications |
 
 ## Generate
@@ -38,6 +39,7 @@ Ruby or RBS output.
 ```sh
 bundle exec rake generate
 bundle exec rake generate:check
+go -C codegen test ./...
 ```
 
 Generation is offline and deterministic. Only local OpenAPI references are
@@ -46,15 +48,21 @@ operation parameters, merges object inheritance, retains scalar aliases and
 described references, and includes every public operation. As in the sibling
 SDKs, `x-codegen.ignore` does not remove the Go reader checkout operation.
 
-`code-samples.json` uses the shared SDK catalogue format, including SDK version,
-operation IDs, and named request examples. Regenerate it when releasing a new
-version. Portal integration consumes a released catalogue; adding a Ruby language
-tab to the developer portal is a separate change.
+Code samples use the shared SDK catalogue format, including SDK version,
+operation IDs, and named request examples. The catalogue is generated on demand
+and is not committed. `rake test` and `rake examples` export a fresh catalogue
+before executing its samples against fake transports.
+
+```sh
+bundle exec rake samples                    # Export to code-samples.json
+bundle exec rake 'samples[/tmp/ruby.json]'   # Export to another path
+```
 
 ## Checks
 
 ```sh
 bundle exec rake test          # Minitest; no live API calls
+bundle exec rake codegen:test  # Go generator tests and vet
 bundle exec rake lint          # StandardRB
 bundle exec rake format        # Apply StandardRB fixes
 bundle exec rake signatures    # Validate RBS declarations
@@ -63,8 +71,8 @@ bundle exec rake docs          # RDoc API documentation
 bundle exec rake build         # Build pkg/sumup-VERSION.gem
 ```
 
-`rake check` runs lint, signatures, generation checks, tests, example checks, and
-the gem build. When changing generated code, format the generator and regenerate;
+`rake check` runs lint, signatures, generation checks, Go and Ruby tests, example
+checks, and the gem build. Format Go sources with `go -C codegen fmt ./...` and regenerate;
 the generated-file check compares its exact output. Add a small generator fixture
 for schema-resolution bugs and test the generated behavior.
 
@@ -76,10 +84,14 @@ manually; CI never charges a card or calls the live API.
 ## Releases
 
 Use Conventional Commits. Release Please prepares a draft release PR and updates
-`lib/sumup/version.rb` and `CHANGELOG.md`. Regenerate code samples on the release
-PR before merging. A published GitHub release triggers the publish workflow,
-which verifies the tag matches the gem version, reruns checks, and publishes via
-RubyGems Trusted Publishing with attestations.
+`lib/sumup/version.rb` and `CHANGELOG.md`. A published GitHub release triggers the
+publish workflow, which verifies the tag matches the gem version, reruns checks,
+and publishes via RubyGems Trusted Publishing with attestations.
+
+The code-sample release workflow generates the catalogue from the release tag
+and opens or updates a PR for `src/codesamples/ruby.json` in `sumup/sumup-developer`.
+The release bot needs access to that repository. Adding a Ruby language tab to
+the developer portal is a separate change.
 
 Before the first release, create the `sumup/sumup-ruby` GitHub repository,
 establish ownership of the `sumup` gem name, configure the `rubygems` GitHub
@@ -95,5 +107,5 @@ The API surface and signed-event contract follow the sibling SumUp SDKs.
 [Stripe Ruby](https://github.com/stripe/stripe-ruby) informed instance-based
 clients, per-call options, and error handling. [Square Ruby](https://github.com/square/square-ruby-sdk)
 provided a comparison for generated resources and models. Retries remain off by
-default, consistent with SumUp's existing clients. The generator is Ruby-native
-so contributors need one language toolchain.
+default, consistent with SumUp's existing clients. The generator uses a separate
+Go module, following the other SumUp SDKs.

@@ -4,8 +4,8 @@ require_relative "test_helper"
 
 class SamplesTest < Minitest::Test
   ROOT = File.expand_path("..", __dir__)
-  CATALOG = JSON.parse(File.read(File.join(ROOT, "code-samples.json")))
   SPEC = JSON.parse(File.read(File.join(ROOT, "openapi.json")))
+  CATALOG = JSON.parse(File.read(File.join(ROOT, "code-samples.json")))
 
   def test_catalog_uses_the_shared_sdk_sample_format
     assert_equal 1, CATALOG.fetch("schemaVersion")

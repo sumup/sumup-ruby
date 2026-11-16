@@ -9,15 +9,30 @@ Rake::TestTask.new(:test) do |task|
   task.warning = true
 end
 
-desc "Generate resources, models, RBS signatures, event types, and code samples"
+desc "Generate resources, models, RBS signatures, and event types"
 task :generate do
-  ruby "codegen/generate.rb"
+  sh "go", "-C", "codegen", "run", ".", "generate"
 end
+
+desc "Export the SDK code sample catalogue (optional output path)"
+task :samples, [:output] do |_, args|
+  sh "go", "-C", "codegen", "run", ".", "samples", "--out", File.expand_path(args[:output] || "code-samples.json")
+end
+
+task test: :samples
 
 namespace :generate do
   desc "Check generated files without changing the working tree"
   task :check do
-    ruby "codegen/generate.rb", "--check"
+    sh "go", "-C", "codegen", "run", ".", "generate", "--check"
+  end
+end
+
+namespace :codegen do
+  desc "Test and vet the Go generator"
+  task :test do
+    sh "go", "-C", "codegen", "test", "./..."
+    sh "go", "-C", "codegen", "vet", "./..."
   end
 end
 
@@ -42,12 +57,12 @@ task :docs do
 end
 
 desc "Check runnable examples and operation code samples"
-task :examples do
+task examples: :samples do
   Dir["examples/**/*.rb"].each { |path| ruby "-c", path }
   ruby "-Ilib:test", "test/samples_test.rb"
 end
 
 desc "Run all checks required by CI"
-task check: [:lint, :signatures, "generate:check", :test, :examples, :build]
+task check: [:lint, :signatures, "generate:check", "codegen:test", :test, :examples, :build]
 
 task default: :check
