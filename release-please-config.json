@@ -3,6 +3,7 @@
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": true,
   "draft": true,
+  "extra-label": "release",
   "include-component-in-tag": false,
   "include-v-in-tag": true,
   "pull-request-title-pattern": "release: ${version}",
