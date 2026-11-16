@@ -1,0 +1,82 @@
+# Catalog Service template
+# Please follow all comments to update values.
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # Name of the service, required
+  name: sumup-ruby
+  # Human readable version of the name of the service, required
+  title: Sumup Ruby
+  # Short and crisp description of the service, required
+  description: Ruby SDK for the SumUp API.
+  annotations:
+    # Slug of the GitHub repo, required
+    github.com/project-slug: sumup/sumup-ruby
+    # Location of the mkdocs.yml file, optional
+    #backstage.io/techdocs-ref: dir:./docs
+  labels:
+    # Service tier based on criticality (T1 most critical - T5 least critical), required
+    # Valid values: T1, T2, T3, T4, T5
+    sumup/service-tier: T3
+  # Tags that identify the service by characteristics, required:
+  # - pii, if service deals with personal identifiable information)
+  # - pci, if service is located in the PCI zone (deals with payments related data)
+  # - critical-path, if service needs immediate response in case of incident
+  # - externally-exposed, if API is reachable through wwww
+  # Example: [critical-path, pii]
+  tags: [ ]
+  links: [ ]
+    # Link to Alerts Runbook, required
+    #- title: Alerts Runbook
+    #  url: https://app.notion.com/p/sumup/Alert-Bank-Validation-Shinkansen-Server-Error-35260cc473228022bd19cdbb371aeff3
+    # Link to Notion Team page, optional
+    #- title: Notion Page
+    #  url: https://app.notion.com/p/sumup/Developer-Experience-31960cc4732280eb96a9ee63efaffa30
+    # Link to Slack channel for service alerts, required
+    #- title: Slack Alert Channel
+    #  url: https://sumup.slack.com/archives/CC1GHFV3P
+    # Link to Slack support channel for service (e.g. team/squad channel), required
+    #- title: Slack Support Channel
+    #  url: https://sumup.slack.com/archives/CC1GHFV3P
+    # Link to Grafana dashboards, recommended
+    #- title: Grafana
+    #  url: https://grafana.sumup.net/dashboards/f/yN_aXbBGz/ecom-platform
+    #  type: telemetry
+    # Link to Honeycomb dashboards, recommended
+    #- title: Honeycomb
+    #  url: https://ui.eu1.honeycomb.io/sumup/board/A3ThTUE4rXf/Ecom-Platform
+    #  type: telemetry
+spec:
+  # Defines the type of Component (service, website, library, see https://backstage.io/docs/features/software-catalog/descriptor-format#spectype-required), required
+  type: unspecified
+  # Marks the state of the service (production, experimental, deprecated, see https://backstage.io/docs/features/software-catalog/descriptor-format#speclifecycle-required), required
+  lifecycle: unspecified
+  # GitHub team owner, see https://github.com/orgs/sumup/teams, required
+  owner: unspecified
+  # The system this Component is part of, recommended
+  system: unspecified
+  # List of API's the service exposes, reference name from the API definition section below, required
+  # If adding the API's is a blocker, slack #backstage to get our help
+  providesApis: [ ]
+  # List of API's the service is connected to, see openapi or https://backstage.sumup.net/api-docs, required
+  consumesApis: [ ]
+#---
+# API definition example
+#apiVersion: backstage.io/v1alpha1
+#kind: API
+#metadata:
+#  name: sumup-ruby-api
+#  title: Sumup Ruby API
+#  # add [externally-exposed] if API is reachable through wwww, required if applicable
+#  tags: [ ]
+#  # API description, required
+#  description: |
+#    Sample API description.
+#spec:
+#  type: openapi
+#  # Marks the state of the API (production, experimental, deprecated, see https://backstage.io/docs/features/software-catalog/descriptor-format#speclifecycle-required), required
+#  lifecycle: unspecified
+#  # Github team owner, see https://github.com/orgs/sumup/teams, required
+#  owner: unspecified
+#  definition:
+#    $text: https://github.com/sumup/ecom-platform/blob/master/apps/vatcalculator/docs/index.yaml
