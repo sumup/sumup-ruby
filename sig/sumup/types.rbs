@@ -849,7 +849,7 @@ module SumUp
       attr_reader vat: (Numeric)?
     end
     class RefundTransactionRequest < Model
-      attr_reader amount: (Numeric)?
+      attr_reader amount: (Integer)?
     end
     class RefundTransactionResponse < Model
     end

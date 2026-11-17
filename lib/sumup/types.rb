@@ -2880,8 +2880,8 @@ module SumUp
     class RefundTransactionRequest < Model
       ##
       # :attr_reader: amount
-      # Amount to refund in major units of the transaction's currency, for example `5` for EUR 5.00. It must be greater than zero and cannot exceed the amount eligible for a refund. Eligibility depends on the transaction and country/currency rules. If omitted, the system requests a full refund.
-      field :amount, :number, wire: "amount", required: false
+      # Amount to refund in minor units of the transaction's currency, for example `500` for EUR 5.00. It must be greater than zero and cannot exceed the amount eligible for a refund. Eligibility depends on the transaction and country/currency rules. If omitted, the system requests a full refund.
+      field :amount, :integer, wire: "amount", required: false
     end
 
     class RefundTransactionResponse < Model
