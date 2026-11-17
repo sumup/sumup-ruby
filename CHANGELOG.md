@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.0](https://github.com/sumup/sumup-ruby/compare/v0.0.1...v0.1.0) (2026-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* accept request bodies only through body keyword ([#10](https://github.com/sumup/sumup-ruby/issues/10))
+
+### Code Refactoring
+
+* accept request bodies only through body keyword ([#10](https://github.com/sumup/sumup-ruby/issues/10)) ([e1d1619](https://github.com/sumup/sumup-ruby/commit/e1d1619421662e90582a2732341f767a80fe1d0b))
+
 ## 0.0.1 (2026-11-16)
 
 
