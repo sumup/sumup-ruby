@@ -19,10 +19,17 @@ class PaginationTest < Minitest::Test
     refute body.key?(:pagination_token)
   end
 
-  def test_search_pagination_accepts_body_keywords
+  def test_search_pagination_accepts_a_request_model
     client = build_client(json_response({"items" => []}))
-    assert_empty client.sales.search_each(merchant_code: "M123", start_date: "2026-01-01").to_a
+    body = SumUp::Types::SaleSearchRequest.new(start_date: "2026-01-01")
+    assert_empty client.sales.search_each(merchant_code: "M123", body: body).to_a
     assert_equal({"start_date" => "2026-01-01"}, JSON.parse(@transport.requests.last.body))
+  end
+
+  def test_search_pagination_rejects_body_keywords
+    client = build_client
+    assert_raises(ArgumentError) { client.sales.search_each(merchant_code: "M123", start_date: "2026-01-01").to_a }
+    assert_empty @transport.requests
   end
 
   def test_repeated_tokens_do_not_loop_forever

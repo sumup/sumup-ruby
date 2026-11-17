@@ -26,19 +26,17 @@ module SumUp
       #
       # Complete the payment through [Hosted Checkout](https://developer.sumup.com/online-payments/checkouts/hosted-checkout/) or the [Payment Widget](https://developer.sumup.com/online-payments/checkouts/card-widget).
       # @return [Types::Checkout]
-      def create(body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create(body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/checkouts",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Checkout"]}, with_response: false)
       end
 
-      def create_with_response(body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_with_response(body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/checkouts",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Checkout"]}, with_response: true)
       end
 
@@ -74,19 +72,17 @@ module SumUp
       #
       # This request changes the checkout details; it does not charge a payment instrument. Process the checkout separately to attempt a payment.
       # @return [Types::Checkout]
-      def update(checkout_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update(checkout_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/checkouts/#{path_segment(checkout_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Checkout"]}, with_response: false)
       end
 
-      def update_with_response(checkout_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update_with_response(checkout_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/checkouts/#{path_segment(checkout_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Checkout"]}, with_response: true)
       end
 
@@ -100,19 +96,17 @@ module SumUp
       #
       # Retrieve the checkout afterwards to confirm its payment status. Acceptance of the processing request does not by itself mean the checkout is paid.
       # @return [(Types::CheckoutSuccess | Types::CheckoutAccepted)]
-      def process(checkout_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def process(checkout_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "PUT", path: "/v0.1/checkouts/#{path_segment(checkout_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "CheckoutSuccess"], 202 => [:model, "CheckoutAccepted"]}, with_response: false)
       end
 
-      def process_with_response(checkout_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def process_with_response(checkout_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "PUT", path: "/v0.1/checkouts/#{path_segment(checkout_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "CheckoutSuccess"], 202 => [:model, "CheckoutAccepted"]}, with_response: true)
       end
 
@@ -137,17 +131,15 @@ module SumUp
       # SumUp validates the merchant session request and returns the Apple Pay
       # session object that your frontend should pass to Apple's JavaScript API.
       # @return [Hash[String, untyped]]
-      def create_apple_pay_session(checkout_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
+      def create_apple_pay_session(checkout_id:, body: UNSET, options: nil)
         @client.request(method: "PUT", path: "/v0.2/checkouts/#{path_segment(checkout_id)}/apple-pay-session",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:map, :any]}, with_response: false)
       end
 
-      def create_apple_pay_session_with_response(checkout_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
+      def create_apple_pay_session_with_response(checkout_id:, body: UNSET, options: nil)
         @client.request(method: "PUT", path: "/v0.2/checkouts/#{path_segment(checkout_id)}/apple-pay-session",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:map, :any]}, with_response: true)
       end
     end

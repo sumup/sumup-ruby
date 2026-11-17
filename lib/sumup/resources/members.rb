@@ -24,19 +24,17 @@ module SumUp
       # By default, sends an invitation email to the provided address. The recipient must accept the invitation to join the account.
       # When `is_managed_user` is `true`, creates a managed user with the provided password and optional nickname and assigns the roles directly, without sending an invitation.
       # @return [Types::Member]
-      def create(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/members",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Member"]}, with_response: false)
       end
 
-      def create_with_response(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_with_response(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/members",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Member"]}, with_response: true)
       end
 
@@ -59,19 +57,17 @@ module SumUp
       # Providing `roles` replaces the member's assigned roles and can grant or revoke access. Providing `metadata` replaces the entire metadata object.
       # For managed users, `user.nickname` changes the display name and `user.password` replaces the password. Updating the password also enables the managed user account.
       # @return [Types::Member]
-      def update(merchant_code:, member_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update(merchant_code:, member_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PUT", path: "/v0.1/merchants/#{path_segment(merchant_code)}/members/#{path_segment(member_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Member"]}, with_response: false)
       end
 
-      def update_with_response(merchant_code:, member_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update_with_response(merchant_code:, member_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PUT", path: "/v0.1/merchants/#{path_segment(merchant_code)}/members/#{path_segment(member_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Member"]}, with_response: true)
       end
 

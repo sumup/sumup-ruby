@@ -164,8 +164,8 @@ module SumUp
     class Sales < Resource
       def each: (**untyped) -> Enumerator[Types::Sale, untyped]
         | (**untyped) { (Types::Sale) -> untyped } -> untyped
-      def search_each: (**untyped) -> Enumerator[Types::SaleSearchItem, untyped]
-        | (**untyped) { (Types::SaleSearchItem) -> untyped } -> untyped
+      def search_each: (merchant_code: String, ?body: Types::SaleSearchRequest | attributes, ?options: request_options) -> Enumerator[Types::SaleSearchItem, untyped]
+        | (merchant_code: String, ?body: Types::SaleSearchRequest | attributes, ?options: request_options) { (Types::SaleSearchItem) -> untyped } -> untyped
     end
     class Transactions < Resource
       def each: (**untyped) -> Enumerator[Types::TransactionHistory, untyped]

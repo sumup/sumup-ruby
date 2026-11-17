@@ -31,19 +31,17 @@ module SumUp
       # (narrow further with `start_date` / `end_date`). Pagination tokens are not interchangeable
       # with `GET /sales`.
       # @return [Types::SaleSearchResponse]
-      def search(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def search(merchant_code:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v1.0/merchants/#{path_segment(merchant_code)}/sales/search",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "SaleSearchResponse"]}, with_response: false)
       end
 
-      def search_with_response(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def search_with_response(merchant_code:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v1.0/merchants/#{path_segment(merchant_code)}/sales/search",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "SaleSearchResponse"]}, with_response: true)
       end
 

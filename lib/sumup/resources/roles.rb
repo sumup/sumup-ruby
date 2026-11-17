@@ -21,19 +21,17 @@ module SumUp
 
       # Create a custom role for the merchant. Roles are defined by the set of permissions that they grant to the members that they are assigned to.
       # @return [Types::Role]
-      def create(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/roles",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Role"]}, with_response: false)
       end
 
-      def create_with_response(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_with_response(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/roles",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Role"]}, with_response: true)
       end
 
@@ -69,19 +67,17 @@ module SumUp
       #
       # Providing `permissions` replaces the role's permission list and changes the access granted to members assigned to that role. Omitted fields remain unchanged.
       # @return [Types::Role]
-      def update(merchant_code:, role_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update(merchant_code:, role_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/roles/#{path_segment(role_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Role"]}, with_response: false)
       end
 
-      def update_with_response(merchant_code:, role_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update_with_response(merchant_code:, role_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/roles/#{path_segment(role_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Role"]}, with_response: true)
       end
     end

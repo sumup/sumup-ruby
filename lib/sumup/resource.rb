@@ -17,14 +17,6 @@ module SumUp
       URI.encode_www_form_component(value.to_s).gsub("+", "%20")
     end
 
-    def request_body(body, fields)
-      unless body.equal?(UNSET)
-        raise ArgumentError, "pass body or body keywords, not both" unless fields.empty?
-        return body
-      end
-      fields.empty? ? UNSET : fields
-    end
-
     def merge_header_options(options, parameters)
       options = RequestOptions.new(**options) if options.is_a?(Hash)
       options ||= RequestOptions.new

@@ -9,7 +9,8 @@ module SumUp
         each_token_page(:list, arguments) { |page| page.items.each(&block) }
       end
 
-      def search_each(**arguments, &block)
+      def search_each(merchant_code:, body: UNSET, options: nil, &block)
+        arguments = {merchant_code: merchant_code, body: body, options: options}
         return enum_for(__method__, **arguments) unless block
         each_token_page(:search, arguments) { |page| page.items.each(&block) }
       end
@@ -19,11 +20,10 @@ module SumUp
       def each_token_page(method, arguments)
         arguments = arguments.dup
         if method == :search
-          payload = request_body(arguments.delete(:body) { UNSET }, arguments.except(:merchant_code, :options))
+          payload = arguments[:body]
           payload = payload.to_h if payload.is_a?(Model)
           payload = {} if payload.equal?(UNSET)
           raise ArgumentError, "search body must be a Hash or Model" unless payload.is_a?(Hash)
-          arguments = arguments.slice(:merchant_code, :options)
           arguments[:body] = payload.transform_keys(&:to_s)
         end
         seen = Set.new

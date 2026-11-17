@@ -41,9 +41,6 @@ func (g *generator) renderResource(tag string, entries []operation) string {
 			args = append(args, "body: UNSET")
 		}
 		args = append(args, "options: nil")
-		if op.body != nil {
-			args = append(args, "**body_fields")
-		}
 		for _, withResponse := range []bool{false, true} {
 			name := op.name
 			if withResponse {
@@ -72,20 +69,17 @@ func (g *generator) renderResource(tag string, entries []operation) string {
 			if len(headers) > 0 {
 				fmt.Fprintf(&b, "        options = merge_header_options(options, {%s})\n", strings.Join(headers, ", "))
 			}
-			if op.body != nil {
-				b.WriteString("        payload = request_body(body, body_fields)\n")
-				if op.bodyRequired {
-					if len(asArray(g.merged(op.body).get("required"))) == 0 {
-						b.WriteString("        payload = {} if payload.equal?(UNSET)\n")
-					} else {
-						b.WriteString("        raise ArgumentError, \"request body is required\" if payload.equal?(UNSET)\n")
-					}
+			if op.body != nil && op.bodyRequired {
+				if len(asArray(g.merged(op.body).get("required"))) == 0 {
+					b.WriteString("        body = {} if body.equal?(UNSET)\n")
+				} else {
+					b.WriteString("        raise ArgumentError, \"request body is required\" if body.equal?(UNSET)\n")
 				}
 			}
 			fmt.Fprintf(&b, "        @client.request(method: %s, path: \"%s\",\n", quote(op.verb), path)
 			body := ""
 			if op.body != nil {
-				body = "body: payload, "
+				body = "body: body, "
 			}
 			fmt.Fprintf(&b, "          query: {%s}, %soptions: options,\n", strings.Join(query, ", "), body)
 			types := []string{}
@@ -129,7 +123,6 @@ func (g *generator) renderResourceRBS(tag string, entries []operation) string {
 			typ := g.describe(asObject(p.get("schema")), constant(op.id)+constant(asString(p.get("name"))))
 			args = append(args, optional+parameterName(p)+": "+typ.rbs(false))
 		}
-		withoutBody := slices.Clone(args)
 		if op.body != nil {
 			optional := ""
 			if !op.bodyRequired {
@@ -138,23 +131,6 @@ func (g *generator) renderResourceRBS(tag string, entries []operation) string {
 			args = append(args, optional+"body: "+op.bodyType.rbs(true))
 		}
 		args = append(args, "?options: request_options")
-		variants := [][]string{args}
-		if op.body != nil && g.isObject(op.body) {
-			bodyArgs := append(withoutBody, "?options: request_options")
-			name := constant(op.id) + "Request"
-			if op.bodyType.kind == "model" {
-				name = op.bodyType.name
-			}
-			required := stringsOf(g.merged(op.body).get("required"))
-			for _, p := range g.properties(op.body) {
-				optional := "?"
-				if slices.Contains(required, p.key) {
-					optional = ""
-				}
-				bodyArgs = append(bodyArgs, optional+fieldName(p.key)+": "+g.describe(asObject(p.value), name+constant(p.key)).rbs(true))
-			}
-			variants = append(variants, bodyArgs)
-		}
 		for _, withResponse := range []bool{false, true} {
 			name := op.name
 			result := op.responseType.rbs(false)
@@ -162,12 +138,7 @@ func (g *generator) renderResourceRBS(tag string, entries []operation) string {
 				name += "_with_response"
 				result = "Response[" + result + "]"
 			}
-			fmt.Fprintf(&b, "      def %s: ", name)
-			rendered := []string{}
-			for _, v := range variants {
-				rendered = append(rendered, "("+strings.Join(v, ", ")+") -> "+result)
-			}
-			b.WriteString(strings.Join(rendered, "\n        | ") + "\n")
+			fmt.Fprintf(&b, "      def %s: (%s) -> %s\n", name, strings.Join(args, ", "), result)
 		}
 	}
 	return b.String() + "    end\n  end\nend\n"

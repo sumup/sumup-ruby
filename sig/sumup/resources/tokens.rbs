@@ -7,9 +7,7 @@ module SumUp
   module Resources
     class Tokens < Resource
       def create: (merchant_code: String, body: Types::CreateMerchantTokenRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Types::Token
-        | (merchant_code: String, ?options: request_options, actions: Array[String]) -> Types::Token
       def create_with_response: (merchant_code: String, body: Types::CreateMerchantTokenRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::Token]
-        | (merchant_code: String, ?options: request_options, actions: Array[String]) -> Response[Types::Token]
     end
   end
 end

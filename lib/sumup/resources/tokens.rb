@@ -11,19 +11,17 @@ module SumUp
       #
       # Pass the returned `access_token` to the SDK. The token expires 15 minutes after creation; use `expires_in` for its remaining lifetime. To continue after it expires, create a new token through this endpoint.
       # @return [Types::Token]
-      def create(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/tokens",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Token"]}, with_response: false)
       end
 
-      def create_with_response(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_with_response(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/tokens",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Token"]}, with_response: true)
       end
     end
