@@ -38,12 +38,14 @@ require "securerandom"
 client = SumUp::Client.new(api_key: ENV.fetch("SUMUP_API_KEY"))
 
 checkout = client.checkouts.create(
-  checkout_reference: SecureRandom.uuid,
-  amount: 19.99,
-  currency: "EUR",
-  merchant_code: ENV.fetch("SUMUP_MERCHANT_CODE"),
-  description: "Order 1234",
-  hosted_checkout: {enabled: true}
+  body: {
+    checkout_reference: SecureRandom.uuid,
+    amount: 19.99,
+    currency: "EUR",
+    merchant_code: ENV.fetch("SUMUP_MERCHANT_CODE"),
+    description: "Order 1234",
+    hosted_checkout: {enabled: true}
+  }
 )
 
 puts checkout.id
@@ -54,7 +56,7 @@ Send the customer to `hosted_checkout_url` to pay. Retrieve the checkout on your
 server to verify its status before fulfilling the order. Keep credentials on your
 server. Sandbox merchants use the same API URL as live merchants.
 
-Request bodies accept keyword arguments, a Hash, or a model from `SumUp::Types`.
+Pass request bodies through `body:` as a Hash or a model from `SumUp::Types`.
 Response fields are available as Ruby methods or through `object["field_name"]`;
 `to_h` preserves unknown fields and explicit nulls. RBS signatures are included.
 
@@ -67,8 +69,10 @@ Use a paired reader and the credentials required by the
 result = client.readers.create_checkout(
   merchant_code: ENV.fetch("SUMUP_MERCHANT_CODE"),
   reader_id: ENV.fetch("SUMUP_READER_ID"),
-  total_amount: {currency: "EUR", minor_unit: 2, value: 1999},
-  description: "Order 1234"
+  body: {
+    total_amount: {currency: "EUR", minor_unit: 2, value: 1999},
+    description: "Order 1234"
+  }
 )
 
 puts result.data.client_transaction_id

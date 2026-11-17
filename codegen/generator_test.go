@@ -148,7 +148,12 @@ func TestCurrentSpec(t *testing.T) {
 		t.Fatal(err)
 	}
 	files := generatedFiles(t, g)
-	contains(t, files["sig/sumup/resources/readers.rbs"], "total_amount: Types::CreateReaderCheckoutRequestTotalAmount | Hash[Symbol | String, untyped]")
+	contains(t, files["sig/sumup/resources/readers.rbs"], "body: Types::CreateReaderCheckoutRequest | Hash[Symbol | String, untyped]")
+	refundSignature := files["sig/sumup/resources/transactions.rbs"]
+	contains(t, refundSignature, "?body: Types::RefundTransactionRequest | Hash[Symbol | String, untyped]")
+	if strings.Contains(refundSignature, "?amount:") {
+		t.Fatal("refund signature accepts body keywords")
+	}
 	expected := []string{}
 	for _, path := range asObject(spec.get("paths")) {
 		for _, entry := range asObject(path.value) {

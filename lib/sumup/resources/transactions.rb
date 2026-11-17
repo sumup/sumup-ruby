@@ -9,17 +9,15 @@ module SumUp
       #
       # Retrieve the transaction afterwards to inspect its refunded amount and refund events. The transaction must be eligible for a refund; see the error responses for invalid amounts, permissions, and processing failures.
       # @return [Types::RefundTransactionResponse]
-      def refund(merchant_code:, transaction_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
+      def refund(merchant_code:, transaction_id:, body: UNSET, options: nil)
         @client.request(method: "POST", path: "/v1.0/merchants/#{path_segment(merchant_code)}/payments/#{path_segment(transaction_id)}/refunds",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "RefundTransactionResponse"]}, with_response: false)
       end
 
-      def refund_with_response(merchant_code:, transaction_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
+      def refund_with_response(merchant_code:, transaction_id:, body: UNSET, options: nil)
         @client.request(method: "POST", path: "/v1.0/merchants/#{path_segment(merchant_code)}/payments/#{path_segment(transaction_id)}/refunds",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "RefundTransactionResponse"]}, with_response: true)
       end
 

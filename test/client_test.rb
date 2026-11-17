@@ -5,7 +5,7 @@ require_relative "test_helper"
 class ClientTest < Minitest::Test
   def test_checkout_creation_uses_bearer_auth_and_typed_response
     client = build_client(json_response({"id" => "checkout_1", "status" => "PENDING", "new_field" => false}, status: 201))
-    result = client.checkouts.create(amount: 10.5, currency: "EUR", merchant_code: "M123", checkout_reference: "order-1")
+    result = client.checkouts.create(body: {amount: 10.5, currency: "EUR", merchant_code: "M123", checkout_reference: "order-1"})
     assert_instance_of SumUp::Types::Checkout, result
     assert_equal "checkout_1", result.id
     assert_equal false, result["new_field"]
@@ -24,10 +24,18 @@ class ClientTest < Minitest::Test
     assert_equal({"valid_until" => nil}, JSON.parse(@transport.requests.last.body))
   end
 
-  def test_body_and_keywords_are_mutually_exclusive
+  def test_body_keywords_are_rejected
     client = build_client
-    assert_raises(ArgumentError) { client.checkouts.create(body: {}, amount: 1) }
+    [:refund, :refund_with_response].each do |method|
+      assert_raises(ArgumentError) { client.transactions.public_send(method, merchant_code: "M123", transaction_id: "one", amount: 1) }
+    end
     assert_empty @transport.requests
+  end
+
+  def test_refund_body_keeps_unknown_fields_and_explicit_nulls
+    client = build_client(json_response({}, status: 201))
+    client.transactions.refund_with_response(merchant_code: "M123", transaction_id: "one", body: {"amount" => 1, "future_field" => nil})
+    assert_equal({"amount" => 1, "future_field" => nil}, JSON.parse(@transport.requests.last.body))
   end
 
   def test_missing_required_body_fails_before_a_request
@@ -110,7 +118,7 @@ class ClientTest < Minitest::Test
 
   def test_success_status_selects_the_corresponding_checkout_model
     client = build_client(json_response({"next_step" => {"url" => "https://example.com", "method" => "POST"}}, status: 202))
-    result = client.checkouts.process(checkout_id: "one", payment_type: "card")
+    result = client.checkouts.process(checkout_id: "one", body: {payment_type: "card"})
     assert_instance_of SumUp::Types::CheckoutAccepted, result
     assert_equal "POST", result.next_step.method_value
   end

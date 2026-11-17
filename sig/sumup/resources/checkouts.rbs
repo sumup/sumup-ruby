@@ -9,27 +9,19 @@ module SumUp
       def list_available_payment_methods: (merchant_code: String, ?amount: Numeric, ?currency: String, ?options: request_options) -> Types::GetPaymentMethodsResponse
       def list_available_payment_methods_with_response: (merchant_code: String, ?amount: Numeric, ?currency: String, ?options: request_options) -> Response[Types::GetPaymentMethodsResponse]
       def create: (body: Types::CheckoutCreateRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Types::Checkout
-        | (?options: request_options, checkout_reference: String, amount: Numeric, currency: String, merchant_code: String, ?description: String, ?return_url: String, ?customer_id: String, ?purpose: String, ?valid_until: (String | nil), ?redirect_url: String, ?hosted_checkout: Types::HostedCheckout | Hash[Symbol | String, untyped]) -> Types::Checkout
       def create_with_response: (body: Types::CheckoutCreateRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::Checkout]
-        | (?options: request_options, checkout_reference: String, amount: Numeric, currency: String, merchant_code: String, ?description: String, ?return_url: String, ?customer_id: String, ?purpose: String, ?valid_until: (String | nil), ?redirect_url: String, ?hosted_checkout: Types::HostedCheckout | Hash[Symbol | String, untyped]) -> Response[Types::Checkout]
       def list: (?checkout_reference: String, ?options: request_options) -> Array[Types::CheckoutSuccess]
       def list_with_response: (?checkout_reference: String, ?options: request_options) -> Response[Array[Types::CheckoutSuccess]]
       def get: (checkout_id: String, ?options: request_options) -> Types::CheckoutSuccess
       def get_with_response: (checkout_id: String, ?options: request_options) -> Response[Types::CheckoutSuccess]
       def update: (checkout_id: String, body: Types::CheckoutUpdateRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Types::Checkout
-        | (checkout_id: String, ?options: request_options, ?amount: Numeric, ?currency: String, ?description: String, ?checkout_reference: String, ?valid_until: (String | nil), ?customer_id: String) -> Types::Checkout
       def update_with_response: (checkout_id: String, body: Types::CheckoutUpdateRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::Checkout]
-        | (checkout_id: String, ?options: request_options, ?amount: Numeric, ?currency: String, ?description: String, ?checkout_reference: String, ?valid_until: (String | nil), ?customer_id: String) -> Response[Types::Checkout]
       def process: (checkout_id: String, body: Types::ProcessCheckout | Hash[Symbol | String, untyped], ?options: request_options) -> (Types::CheckoutSuccess | Types::CheckoutAccepted)
-        | (checkout_id: String, ?options: request_options, payment_type: String, ?installments: Integer, ?mandate: Types::MandatePayload | Hash[Symbol | String, untyped], ?card: Types::Card | Hash[Symbol | String, untyped], ?google_pay: Hash[Symbol | String, untyped], ?apple_pay: Hash[Symbol | String, untyped], ?token: String, ?customer_id: String, ?personal_details: Types::PersonalDetails | Hash[Symbol | String, untyped]) -> (Types::CheckoutSuccess | Types::CheckoutAccepted)
       def process_with_response: (checkout_id: String, body: Types::ProcessCheckout | Hash[Symbol | String, untyped], ?options: request_options) -> Response[(Types::CheckoutSuccess | Types::CheckoutAccepted)]
-        | (checkout_id: String, ?options: request_options, payment_type: String, ?installments: Integer, ?mandate: Types::MandatePayload | Hash[Symbol | String, untyped], ?card: Types::Card | Hash[Symbol | String, untyped], ?google_pay: Hash[Symbol | String, untyped], ?apple_pay: Hash[Symbol | String, untyped], ?token: String, ?customer_id: String, ?personal_details: Types::PersonalDetails | Hash[Symbol | String, untyped]) -> Response[(Types::CheckoutSuccess | Types::CheckoutAccepted)]
       def deactivate: (checkout_id: String, ?options: request_options) -> Types::Checkout
       def deactivate_with_response: (checkout_id: String, ?options: request_options) -> Response[Types::Checkout]
       def create_apple_pay_session: (checkout_id: String, ?body: Types::CreateApplePaySessionRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Hash[String, untyped]
-        | (checkout_id: String, ?options: request_options, context: String, target: String) -> Hash[String, untyped]
       def create_apple_pay_session_with_response: (checkout_id: String, ?body: Types::CreateApplePaySessionRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Hash[String, untyped]]
-        | (checkout_id: String, ?options: request_options, context: String, target: String) -> Response[Hash[String, untyped]]
     end
   end
 end

@@ -9,9 +9,7 @@ module SumUp
       def list: (merchant_code: String, ?pagination_token: String, ?pagination_limit: Integer, ?options: request_options) -> Types::SalePage
       def list_with_response: (merchant_code: String, ?pagination_token: String, ?pagination_limit: Integer, ?options: request_options) -> Response[Types::SalePage]
       def search: (merchant_code: String, body: Types::SaleSearchRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Types::SaleSearchResponse
-        | (merchant_code: String, ?options: request_options, ?start_date: String, ?end_date: String, ?sale_statuses: Array[String], ?payment_statuses: Array[String], ?sales_channels: Array[String], ?pagination_token: String, ?pagination_limit: Integer) -> Types::SaleSearchResponse
       def search_with_response: (merchant_code: String, body: Types::SaleSearchRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::SaleSearchResponse]
-        | (merchant_code: String, ?options: request_options, ?start_date: String, ?end_date: String, ?sale_statuses: Array[String], ?payment_statuses: Array[String], ?sales_channels: Array[String], ?pagination_token: String, ?pagination_limit: Integer) -> Response[Types::SaleSearchResponse]
       def get: (merchant_code: String, sale_id: String, ?options: request_options) -> Types::Sale
       def get_with_response: (merchant_code: String, sale_id: String, ?options: request_options) -> Response[Types::Sale]
     end

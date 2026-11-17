@@ -7,19 +7,17 @@ module SumUp
     class Customers < Resource
       # Creates a customer using the `customer_id` you supply. Choose an identifier that maps to the payer in your own system and reuse it when retrieving the customer or associating checkouts and saved payment instruments with them.
       # @return [Types::Customer]
-      def create(body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create(body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/customers",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Customer"]}, with_response: false)
       end
 
-      def create_with_response(body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_with_response(body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/customers",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Customer"]}, with_response: true)
       end
 
@@ -41,19 +39,17 @@ module SumUp
       #
       # The request only overwrites the parameters included in the request, all other parameters will remain with their initially assigned values.
       # @return [Types::Customer]
-      def update(customer_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update(customer_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PUT", path: "/v0.1/customers/#{path_segment(customer_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Customer"]}, with_response: false)
       end
 
-      def update_with_response(customer_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update_with_response(customer_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PUT", path: "/v0.1/customers/#{path_segment(customer_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Customer"]}, with_response: true)
       end
 

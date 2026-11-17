@@ -9,19 +9,17 @@ module SumUp
       #
       # Use `client_transaction_id` as an idempotency key: retrying the request with the same value returns the result of the original payment instead of creating a duplicate.
       # @return [Types::ReaderPaymentResponse]
-      def create_go_checkout(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_go_checkout(merchant_code:, reader_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/go-checkout",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "ReaderPaymentResponse"]}, with_response: false)
       end
 
-      def create_go_checkout_with_response(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_go_checkout_with_response(merchant_code:, reader_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/go-checkout",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "ReaderPaymentResponse"]}, with_response: true)
       end
 
@@ -41,19 +39,17 @@ module SumUp
 
       # Create a new Reader for the merchant account.
       # @return [Types::Reader]
-      def create(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Reader"]}, with_response: false)
       end
 
-      def create_with_response(merchant_code:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_with_response(merchant_code:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "Reader"]}, with_response: true)
       end
 
@@ -91,19 +87,17 @@ module SumUp
       #
       # Providing `metadata` replaces the entire metadata object; include all entries that should be retained. Omitted fields remain unchanged.
       # @return [Types::Reader]
-      def update(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update(merchant_code:, reader_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Reader"]}, with_response: false)
       end
 
-      def update_with_response(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        payload = {} if payload.equal?(UNSET)
+      def update_with_response(merchant_code:, reader_id:, body: UNSET, options: nil)
+        body = {} if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "Reader"]}, with_response: true)
       end
 
@@ -123,19 +117,17 @@ module SumUp
       # Optionally include an `affiliate` object to attach integrator metadata to the payment.
       # Provide both `app_id` and `key` when including this object.
       # @return [Types::CreateReaderCheckoutResponse]
-      def create_checkout(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_checkout(merchant_code:, reader_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/checkout",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "CreateReaderCheckoutResponse"]}, with_response: false)
       end
 
-      def create_checkout_with_response(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def create_checkout_with_response(merchant_code:, reader_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/checkout",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {201 => [:model, "CreateReaderCheckoutResponse"]}, with_response: true)
       end
 
@@ -201,19 +193,17 @@ module SumUp
       # When enabling menu lock for a reader without a PIN, include a four-digit PIN
       # in `menu_lock.passcode` in the same request.
       # @return [Types::UpdateReaderSettingsResponse]
-      def update_reader_settings(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def update_reader_settings(merchant_code:, reader_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/settings",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "UpdateReaderSettingsResponse"]}, with_response: false)
       end
 
-      def update_reader_settings_with_response(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
-        raise ArgumentError, "request body is required" if payload.equal?(UNSET)
+      def update_reader_settings_with_response(merchant_code:, reader_id:, body: UNSET, options: nil)
+        raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/settings",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {200 => [:model, "UpdateReaderSettingsResponse"]}, with_response: true)
       end
 
@@ -232,17 +222,15 @@ module SumUp
       #
       # **Note**: If the target device is a Solo, it must be in version 3.3.28.0 or higher.
       # @return [untyped]
-      def terminate_checkout(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
+      def terminate_checkout(merchant_code:, reader_id:, body: UNSET, options: nil)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/terminate",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {202 => :any}, with_response: false)
       end
 
-      def terminate_checkout_with_response(merchant_code:, reader_id:, body: UNSET, options: nil, **body_fields)
-        payload = request_body(body, body_fields)
+      def terminate_checkout_with_response(merchant_code:, reader_id:, body: UNSET, options: nil)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/terminate",
-          query: {}, body: payload, options: options,
+          query: {}, body: body, options: options,
           response_type: {202 => :any}, with_response: true)
       end
 
