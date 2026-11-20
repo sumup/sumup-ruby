@@ -20,13 +20,11 @@ func boolRank(value bool) int {
 	}
 	return 1
 }
-func (g *generator) renderResource(tag string, entries []operation) string {
+func (g *generator) renderResource(tag string, entries []operation, children []string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%smodule SumUp\n  module Resources\n    class %s < Resource\n", header, constant(tag))
-	for _, child := range g.tags() {
-		if g.parents[child] == tag {
-			fmt.Fprintf(&b, "      def %s\n        @%s ||= %s.new(@client)\n      end\n\n", g.childNames[child], g.childNames[child], constant(child))
-		}
+	for _, child := range children {
+		fmt.Fprintf(&b, "      def %s\n        @%s ||= %s.new(@client)\n      end\n\n", g.childNames[child], g.childNames[child], constant(child))
 	}
 	for _, op := range entries {
 		b.WriteString(comment(op.description, "      "))
@@ -97,10 +95,9 @@ func (g *generator) renderResource(tag string, entries []operation) string {
 	}
 	return strings.TrimRight(b.String(), "\n") + "\n    end\n  end\nend\n"
 }
-func (g *generator) renderIndex() string {
+func (g *generator) renderIndex(tags []string) string {
 	var b strings.Builder
 	b.WriteString(header)
-	tags := g.tags()
 	for _, tag := range tags {
 		fmt.Fprintf(&b, "require_relative \"resources/%s\"\n", snake(tag))
 	}
@@ -121,17 +118,15 @@ func (g *generator) renderIndex() string {
 	}
 	return strings.TrimRight(b.String(), "\n") + "\n  end\nend\n"
 }
-func (g *generator) renderResourceRBS(tag string, entries []operation) string {
+func (g *generator) renderResourceRBS(tag string, entries []operation, children []string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%smodule SumUp\n", generated)
 	if g.parents[tag] == "" {
 		fmt.Fprintf(&b, "  class Client\n    def %s: () -> Resources::%s\n  end\n", snake(tag), constant(tag))
 	}
 	fmt.Fprintf(&b, "  module Resources\n    class %s < Resource\n", constant(tag))
-	for _, child := range g.tags() {
-		if g.parents[child] == tag {
-			fmt.Fprintf(&b, "      def %s: () -> %s\n", g.childNames[child], constant(child))
-		}
+	for _, child := range children {
+		fmt.Fprintf(&b, "      def %s: () -> %s\n", g.childNames[child], constant(child))
 	}
 	for _, op := range entries {
 		args := []string{}

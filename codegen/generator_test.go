@@ -54,7 +54,7 @@ func TestNestedResources(t *testing.T) {
 	  "tags":[{"name":"Readers"},{"name":"ReaderCheckouts","x-displayName":"Checkouts"}],
 	  "x-tagGroups":[{"name":"Readers","tags":["ReaderCheckouts"]}],
 	  "paths":{"/readers/checkouts":{"post":{"operationId":"CreateReaderCheckout",
-	    "tags":["ReaderCheckouts"],"x-codegen":{"method_name":"create_checkout"},
+	    "tags":["ReaderCheckouts"],"x-codegen":{"method_name":"create"},
 	    "responses":{"204":{"description":"OK"}}}}}
 	}`))
 	if err != nil {
@@ -67,8 +67,10 @@ func TestNestedResources(t *testing.T) {
 	files := generatedFiles(t, g)
 	parent := files["lib/sumup/resources/readers.rb"]
 	contains(t, parent, "@checkouts ||= ReaderCheckouts.new(@client)")
-	contains(t, parent, "def create_checkout(")
-	contains(t, files["lib/sumup/resources/reader_checkouts.rb"], "def create_checkout(")
+	if strings.Contains(parent, "def create(") {
+		t.Error("checkout operation is only available on the nested client")
+	}
+	contains(t, files["lib/sumup/resources/reader_checkouts.rb"], "def create(")
 	contains(t, files["sig/sumup/resources/readers.rbs"], "def checkouts: () -> ReaderCheckouts")
 	if got := g.resourcePath("ReaderCheckouts"); got != "readers.checkouts" {
 		t.Fatalf("wrong sample resource path %q", got)
