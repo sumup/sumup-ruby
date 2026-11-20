@@ -46,6 +46,35 @@ func contains(t *testing.T, source, want string) {
 		t.Fatalf("expected generated source to contain %q", want)
 	}
 }
+
+func TestNestedResources(t *testing.T) {
+	t.Parallel()
+	spec, err := decode(strings.NewReader(`{
+	  "openapi":"3.1.0","info":{"version":"1.0.0"},
+	  "tags":[{"name":"Readers"},{"name":"ReaderCheckouts","x-displayName":"Checkouts"}],
+	  "x-tagGroups":[{"name":"Readers","tags":["ReaderCheckouts"]}],
+	  "paths":{"/readers/checkouts":{"post":{"operationId":"CreateReaderCheckout",
+	    "tags":["ReaderCheckouts"],"x-codegen":{"method_name":"create_checkout"},
+	    "responses":{"204":{"description":"OK"}}}}}
+	}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	g, err := newGenerator(spec)
+	if err != nil {
+		t.Fatal(err)
+	}
+	files := generatedFiles(t, g)
+	parent := files["lib/sumup/resources/readers.rb"]
+	contains(t, parent, "@checkouts ||= ReaderCheckouts.new(@client)")
+	contains(t, parent, "def create_checkout(")
+	contains(t, files["lib/sumup/resources/reader_checkouts.rb"], "def create_checkout(")
+	contains(t, files["sig/sumup/resources/readers.rbs"], "def checkouts: () -> ReaderCheckouts")
+	if got := g.resourcePath("ReaderCheckouts"); got != "readers.checkouts" {
+		t.Fatalf("wrong sample resource path %q", got)
+	}
+}
+
 func TestSchemaTypes(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
