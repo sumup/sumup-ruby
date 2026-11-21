@@ -93,7 +93,7 @@ func (g *generator) samples(version string) catalog {
 			if op.body != nil {
 				args = append(args, "body: "+literal(raw.get("value")))
 			}
-			code := "require \"sumup\"\n\nclient = SumUp::Client.new(api_key: ENV.fetch(\"SUMUP_API_KEY\"))\nresult = client." + snake(op.tag) + "." + op.name + "(" + strings.Join(args, ", ") + ")\n"
+			code := "require \"sumup\"\n\nclient = SumUp::Client.new(api_key: ENV.fetch(\"SUMUP_API_KEY\"))\nresult = client." + g.resourcePath(op.tag) + "." + op.name + "(" + strings.Join(args, ", ") + ")\n"
 			id := op.id
 			if example.key != "" {
 				id += "." + example.key

@@ -46,6 +46,37 @@ func contains(t *testing.T, source, want string) {
 		t.Fatalf("expected generated source to contain %q", want)
 	}
 }
+
+func TestNestedResources(t *testing.T) {
+	t.Parallel()
+	spec, err := decode(strings.NewReader(`{
+	  "openapi":"3.1.0","info":{"version":"1.0.0"},
+	  "tags":[{"name":"Readers"},{"name":"ReaderCheckouts","x-displayName":"Checkouts"}],
+	  "x-tagGroups":[{"name":"Readers","tags":["ReaderCheckouts"]}],
+	  "paths":{"/readers/checkouts":{"post":{"operationId":"CreateReaderCheckout",
+	    "tags":["ReaderCheckouts"],"x-codegen":{"method_name":"create"},
+	    "responses":{"204":{"description":"OK"}}}}}
+	}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	g, err := newGenerator(spec)
+	if err != nil {
+		t.Fatal(err)
+	}
+	files := generatedFiles(t, g)
+	parent := files["lib/sumup/resources/readers.rb"]
+	contains(t, parent, "@checkouts ||= ReaderCheckouts.new(@client)")
+	if strings.Contains(parent, "def create(") {
+		t.Error("checkout operation is only available on the nested client")
+	}
+	contains(t, files["lib/sumup/resources/reader_checkouts.rb"], "def create(")
+	contains(t, files["sig/sumup/resources/readers.rbs"], "def checkouts: () -> ReaderCheckouts")
+	if got := g.resourcePath("ReaderCheckouts"); got != "readers.checkouts" {
+		t.Fatalf("wrong sample resource path %q", got)
+	}
+}
+
 func TestSchemaTypes(t *testing.T) {
 	t.Parallel()
 	tests := []struct {

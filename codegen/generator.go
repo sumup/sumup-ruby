@@ -132,6 +132,8 @@ type generator struct {
 	spec        object
 	schemas     object
 	operations  []operation
+	parents     map[string]string
+	childNames  map[string]string
 	descriptors map[string]descriptor
 	enums       map[string][]string
 }
@@ -144,6 +146,9 @@ func newGenerator(spec object) (*generator, error) {
 		return nil, fmt.Errorf("spec must contain a paths object")
 	}
 	g := &generator{spec: spec, schemas: slices.Clone(asObject(asObject(spec.get("components")).get("schemas"))), descriptors: map[string]descriptor{}, enums: map[string][]string{}}
+	if err := g.collectTagHierarchy(); err != nil {
+		return nil, err
+	}
 	if err := g.collect(); err != nil {
 		return nil, err
 	}
@@ -265,28 +270,29 @@ func (g *generator) generate() (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	files := map[string]string{"lib/sumup/types.rb": types, "sig/sumup/types.rbs": g.renderTypesRBS(), "lib/sumup/resources.rb": g.renderIndex(), "lib/sumup/event_types.rb": g.renderEvents(), "sig/sumup/events.rbs": g.renderEventsRBS()}
-	for _, tag := range g.tags() {
-		entries := []operation{}
-		for _, op := range g.operations {
-			if op.tag == tag {
-				entries = append(entries, op)
+	operations := make(map[string][]operation)
+	for _, op := range g.operations {
+		operations[op.tag] = append(operations[op.tag], op)
+		for parent := g.parents[op.tag]; parent != ""; parent = g.parents[parent] {
+			if _, exists := operations[parent]; exists {
+				break
 			}
+			operations[parent] = nil
 		}
-		files["lib/sumup/resources/"+snake(tag)+".rb"] = g.renderResource(tag, entries)
-		files["sig/sumup/resources/"+snake(tag)+".rbs"] = g.renderResourceRBS(tag, entries)
+	}
+	tags := slices.Sorted(maps.Keys(operations))
+	children := make(map[string][]string)
+	for _, tag := range tags {
+		if parent := g.parents[tag]; parent != "" {
+			children[parent] = append(children[parent], tag)
+		}
+	}
+	files := map[string]string{"lib/sumup/types.rb": types, "sig/sumup/types.rbs": g.renderTypesRBS(), "lib/sumup/resources.rb": g.renderIndex(tags), "lib/sumup/event_types.rb": g.renderEvents(), "sig/sumup/events.rbs": g.renderEventsRBS()}
+	for _, tag := range tags {
+		files["lib/sumup/resources/"+snake(tag)+".rb"] = g.renderResource(tag, operations[tag], children[tag])
+		files["sig/sumup/resources/"+snake(tag)+".rbs"] = g.renderResourceRBS(tag, operations[tag], children[tag])
 	}
 	return files, nil
-}
-func (g *generator) tags() []string {
-	tags := []string{}
-	for _, op := range g.operations {
-		if !slices.Contains(tags, op.tag) {
-			tags = append(tags, op.tag)
-		}
-	}
-	slices.Sort(tags)
-	return tags
 }
 func (g *generator) renderTypes() (string, error) {
 	var b strings.Builder
