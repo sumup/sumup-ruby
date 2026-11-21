@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/sumup/sumup-ruby/compare/v0.1.0...v0.1.1) (2026-11-21)
+
+
+### Features
+
+* **codegen:** support nested SDK resources ([#13](https://github.com/sumup/sumup-ruby/issues/13)) ([7d928f3](https://github.com/sumup/sumup-ruby/commit/7d928f3ff82e20e27a8f8a56a6d337c77463d488))
+
 ## [0.1.0](https://github.com/sumup/sumup-ruby/compare/v0.0.1...v0.1.0) (2026-11-17)
 
 
