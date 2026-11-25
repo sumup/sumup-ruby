@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/sumup/sumup-ruby/compare/v0.1.0...v0.2.0) (2026-11-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Use the scoped checkout and settings model constants in place of the flat constants.
+
+### Features
+
+* **codegen:** support nested SDK resources ([#13](https://github.com/sumup/sumup-ruby/issues/13)) ([7d928f3](https://github.com/sumup/sumup-ruby/commit/7d928f3ff82e20e27a8f8a56a6d337c77463d488))
+* scope reader checkout and settings models ([#16](https://github.com/sumup/sumup-ruby/issues/16)) ([47cb0f8](https://github.com/sumup/sumup-ruby/commit/47cb0f82c19a370430b0125250662610ff8ebb5b))
+
 ## [0.1.0](https://github.com/sumup/sumup-ruby/compare/v0.0.1...v0.1.0) (2026-11-17)
 
 
