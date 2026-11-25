@@ -20,19 +20,19 @@ module SumUp
       #
       # Optionally include an `affiliate` object to attach integrator metadata to the payment.
       # Provide both `app_id` and `key` when including this object.
-      # @return [Types::CreateReaderCheckoutResponse]
+      # @return [Types::Readers::Checkouts::CreateResponse]
       def create(merchant_code:, reader_id:, body: UNSET, options: nil)
         raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/checkout",
           query: {}, body: body, options: options,
-          response_type: {201 => [:model, "CreateReaderCheckoutResponse"]}, with_response: false)
+          response_type: {201 => [:model, "Readers::Checkouts::CreateResponse"]}, with_response: false)
       end
 
       def create_with_response(merchant_code:, reader_id:, body: UNSET, options: nil)
         raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "POST", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/checkout",
           query: {}, body: body, options: options,
-          response_type: {201 => [:model, "CreateReaderCheckoutResponse"]}, with_response: true)
+          response_type: {201 => [:model, "Readers::Checkouts::CreateResponse"]}, with_response: true)
       end
 
       # Terminate a Reader Checkout stops the current transaction on the target device.
@@ -63,17 +63,17 @@ module SumUp
       end
 
       # Get a Checkout for a Reader.
-      # @return [Types::GetReaderCheckoutResponse]
+      # @return [Types::Readers::Checkouts::GetResponse]
       def get(merchant_code:, reader_id:, checkout_id:, options: nil)
         @client.request(method: "GET", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/checkout/#{path_segment(checkout_id)}",
           query: {}, options: options,
-          response_type: {200 => [:model, "GetReaderCheckoutResponse"]}, with_response: false)
+          response_type: {200 => [:model, "Readers::Checkouts::GetResponse"]}, with_response: false)
       end
 
       def get_with_response(merchant_code:, reader_id:, checkout_id:, options: nil)
         @client.request(method: "GET", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/checkout/#{path_segment(checkout_id)}",
           query: {}, options: options,
-          response_type: {200 => [:model, "GetReaderCheckoutResponse"]}, with_response: true)
+          response_type: {200 => [:model, "Readers::Checkouts::GetResponse"]}, with_response: true)
       end
     end
   end

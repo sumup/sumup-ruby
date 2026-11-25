@@ -12,17 +12,17 @@ module SumUp
       # Returns `404` if the reader is offline and no saved settings are available.
       #
       # The response may include the menu lock PIN.
-      # @return [Types::GetReaderSettingsResponse]
+      # @return [Types::Readers::Settings::GetResponse]
       def get(merchant_code:, reader_id:, options: nil)
         @client.request(method: "GET", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/settings",
           query: {}, options: options,
-          response_type: {200 => [:model, "GetReaderSettingsResponse"]}, with_response: false)
+          response_type: {200 => [:model, "Readers::Settings::GetResponse"]}, with_response: false)
       end
 
       def get_with_response(merchant_code:, reader_id:, options: nil)
         @client.request(method: "GET", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/settings",
           query: {}, options: options,
-          response_type: {200 => [:model, "GetReaderSettingsResponse"]}, with_response: true)
+          response_type: {200 => [:model, "Readers::Settings::GetResponse"]}, with_response: true)
       end
 
       # Updates the menu lock settings for a Solo reader. The reader must be online.
@@ -34,19 +34,19 @@ module SumUp
       #
       # When enabling menu lock for a reader without a PIN, include a four-digit PIN
       # in `menu_lock.passcode` in the same request.
-      # @return [Types::UpdateReaderSettingsResponse]
+      # @return [Types::Readers::Settings::UpdateResponse]
       def update(merchant_code:, reader_id:, body: UNSET, options: nil)
         raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/settings",
           query: {}, body: body, options: options,
-          response_type: {200 => [:model, "UpdateReaderSettingsResponse"]}, with_response: false)
+          response_type: {200 => [:model, "Readers::Settings::UpdateResponse"]}, with_response: false)
       end
 
       def update_with_response(merchant_code:, reader_id:, body: UNSET, options: nil)
         raise ArgumentError, "request body is required" if body.equal?(UNSET)
         @client.request(method: "PATCH", path: "/v0.1/merchants/#{path_segment(merchant_code)}/readers/#{path_segment(reader_id)}/settings",
           query: {}, body: body, options: options,
-          response_type: {200 => [:model, "UpdateReaderSettingsResponse"]}, with_response: true)
+          response_type: {200 => [:model, "Readers::Settings::UpdateResponse"]}, with_response: true)
       end
     end
   end

@@ -113,7 +113,9 @@ func writeFiles(root string, files map[string]string, check bool) error {
 	var stale []string
 	for _, resource := range []struct{ dir, ext string }{
 		{"lib/sumup/resources", ".rb"},
+		{"lib/sumup/types", ".rb"},
 		{"sig/sumup/resources", ".rbs"},
+		{"sig/sumup/types", ".rbs"},
 	} {
 		dir := filepath.Join(root, filepath.FromSlash(resource.dir))
 		err := filepath.WalkDir(dir, func(path string, entry os.DirEntry, err error) error {

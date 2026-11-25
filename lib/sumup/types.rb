@@ -743,146 +743,6 @@ module SumUp
       field :type, :string, wire: "type", required: true
     end
 
-    # Payment details for a Reader Checkout.
-    class CreateReaderCheckoutRequest < Model
-      ##
-      # :attr_reader: aade
-      # Optional object containing data for transactions from ERP integrators in Greece that comply with the AADE 1155 protocol.
-      # When such regulatory/business requirements apply, this object must be provided and contains the data needed to validate the transaction with the AADE signature provider.
-      field :aade, [:model, "CreateReaderCheckoutRequestAade"], wire: "aade", required: false
-      ##
-      # :attr_reader: affiliate
-      # Optional affiliate metadata associated with the checkout's payment.
-      # Provide both `app_id` and `key` when including this object.
-      field :affiliate, [:union, [[:model, "CreateReaderCheckoutRequestAffiliate"], :nil]], wire: "affiliate", required: false
-      ##
-      # :attr_reader: card_type
-      # The card type of the card used for the transaction.
-      # It is required only for some countries (e.g: Brazil).
-      field :card_type, :string, wire: "card_type", required: false
-      ##
-      # :attr_reader: description
-      # Description of the checkout to be shown in the Merchant Sales
-      field :description, :string, wire: "description", required: false
-      ##
-      # :attr_reader: installments
-      # Number of installments for the transaction.
-      # It may vary according to the merchant country.
-      # For example, in Brazil, the maximum number of installments is 12.
-      #
-      # Omit if the merchant country does not support installments.
-      # Otherwise, the checkout will be rejected.
-      field :installments, [:union, [:integer, :nil]], wire: "installments", required: false
-      ##
-      # :attr_reader: payment_type
-      # The payment method type for the transaction. Defaults to `card`.
-      #
-      # Use `pix` to initiate a Pix QR-code payment flow on the device.
-      # Pix is only supported for Brazilian merchants; other merchants will receive a 422 error.
-      field :payment_type, :string, wire: "payment_type", required: false
-      ##
-      # :attr_reader: return_url
-      # Webhook URL to which the payment result will be sent.
-      # It must be a HTTPS url.
-      field :return_url, :string, wire: "return_url", required: false
-      ##
-      # :attr_reader: tip_rates
-      # Exactly three distinct tipping rates to be displayed to the cardholder.
-      # Each rate is a fraction between 0.01 and 1.00 in increments of 0.01.
-      # The rates are sorted in ascending order by the server.
-      field :tip_rates, [:array, :number], wire: "tip_rates", required: false
-      ##
-      # :attr_reader: tip_timeout
-      # Time in seconds the cardholder has to select a tip rate.
-      # If not provided, the default value is 30 seconds.
-      #
-      # It can only be set if `tip_rates` is provided.
-      #
-      # **Note**: If the target device is a Solo, it must be in version 3.3.38.0 or higher.
-      field :tip_timeout, :integer, wire: "tip_timeout", required: false
-      ##
-      # :attr_reader: total_amount
-      # Amount to charge in minor units. Use the decimal places for the currency.
-      # CLP, COP, and HUF use zero decimal places.
-      #
-      # For example, send `1234` for EUR 12.34 or `1000` for CLP 1000.
-      field :total_amount, [:model, "CreateReaderCheckoutRequestTotalAmount"], wire: "total_amount", required: true
-    end
-
-    # Optional object containing data for transactions from ERP integrators in Greece that comply with the AADE 1155 protocol.
-    # When such regulatory/business requirements apply, this object must be provided and contains the data needed to validate the transaction with the AADE signature provider.
-    class CreateReaderCheckoutRequestAade < Model
-      ##
-      # :attr_reader: provider_id
-      # The identifier of the AADE signature provider.
-      field :provider_id, :string, wire: "provider_id", required: true
-      ##
-      # :attr_reader: signature
-      # The base64 encoded signature of the transaction data.
-      field :signature, :string, wire: "signature", required: true
-      ##
-      # :attr_reader: signature_data
-      # The string containing the signed transaction data.
-      field :signature_data, :string, wire: "signature_data", required: true
-    end
-
-    # Optional affiliate metadata associated with the checkout's payment.
-    # Provide both `app_id` and `key` when including this object.
-    class CreateReaderCheckoutRequestAffiliate < Model
-      ##
-      # :attr_reader: app_id
-      # Integrator application identifier from the [Affiliate Keys](https://developer.sumup.com/affiliate-keys) page.
-      # Required when the affiliate object is provided.
-      field :app_id, :string, wire: "app_id", required: true
-      ##
-      # :attr_reader: foreign_transaction_id
-      # Integrator-owned transaction reference. Optional.
-      # Can be used to retrieve the transaction via the [Transactions API](https://developer.sumup.com/api/transactions/get).
-      field :foreign_transaction_id, :string, wire: "foreign_transaction_id", required: false
-      ##
-      # :attr_reader: key
-      # Affiliate key generated in the [Affiliate Keys](https://developer.sumup.com/affiliate-keys) page.
-      # Required when the affiliate object is provided.
-      field :key, :string, wire: "key", required: true
-      ##
-      # :attr_reader: tags
-      # Optional key-value metadata associated with the transaction.
-      field :tags, [:map, :any], wire: "tags", required: false
-    end
-
-    # Amount to charge in minor units. Use the decimal places for the currency.
-    # CLP, COP, and HUF use zero decimal places.
-    #
-    # For example, send `1234` for EUR 12.34 or `1000` for CLP 1000.
-    class CreateReaderCheckoutRequestTotalAmount < Model
-      ##
-      # :attr_reader: currency
-      # Currency ISO 4217 code
-      field :currency, :string, wire: "currency", required: true
-      ##
-      # :attr_reader: value
-      # Integer value of the amount.
-      field :value, :integer, wire: "value", required: true
-    end
-
-    class CreateReaderCheckoutResponse < Model
-      ##
-      # :attr_reader: data
-      field :data, [:model, "CreateReaderCheckoutResponseData"], wire: "data", required: true
-    end
-
-    class CreateReaderCheckoutResponseData < Model
-      ##
-      # :attr_reader: checkout_id
-      # The checkout ID is a unique identifier for the checkout.
-      field :checkout_id, :string, wire: "checkout_id", required: false
-      ##
-      # :attr_reader: client_transaction_id
-      # Unique identifier for the transaction associated with this checkout.
-      # Use this value to match the checkout with payment events and transaction records.
-      field :client_transaction_id, :string, wire: "client_transaction_id", required: true
-    end
-
     # Unprocessable entity
     class CreateReaderCheckoutUnprocessableEntity < Model
       ##
@@ -1383,115 +1243,6 @@ module SumUp
       # :attr_reader: id
       # Unique identifier of the payment method.
       field :id, :string, wire: "id", required: true
-    end
-
-    class GetReaderCheckoutResponse < Model
-      ##
-      # :attr_reader: data
-      field :data, [:model, "GetReaderCheckoutResponseData"], wire: "data", required: true
-    end
-
-    class GetReaderCheckoutResponseData < Model
-      ##
-      # :attr_reader: card_type
-      # Type of the card, or null when no card type was specified.
-      field :card_type, [:union, [:string, :nil]], wire: "card_type", required: true
-      ##
-      # :attr_reader: checkout_id
-      # Unique identifier for the checkout
-      field :checkout_id, :string, wire: "checkout_id", required: true
-      ##
-      # :attr_reader: client_transaction_id
-      # Client transaction identifier associated with the checkout
-      field :client_transaction_id, :string, wire: "client_transaction_id", required: true
-      ##
-      # :attr_reader: created_at
-      # Checkout creation timestamp
-      field :created_at, :string, wire: "created_at", required: true
-      ##
-      # :attr_reader: installments
-      # Number of installments for the transaction. Required for some countries.
-      field :installments, [:union, [:integer, :nil]], wire: "installments", required: true
-      ##
-      # :attr_reader: payment_failure_reason
-      # Reason for the payment failure, or null when no failure reason is available.
-      field :payment_failure_reason, [:union, [:string, :nil]], wire: "payment_failure_reason", required: true
-      ##
-      # :attr_reader: payment_status
-      # Status of the payment, or null when no payment status is available.
-      field :payment_status, [:union, [:string, :nil]], wire: "payment_status", required: true
-      ##
-      # :attr_reader: payment_type
-      # Type of the payment. Required for some countries
-      field :payment_type, :string, wire: "payment_type", required: true
-      ##
-      # :attr_reader: reader_firmware_version
-      # Reader firmware version
-      field :reader_firmware_version, :string, wire: "reader_firmware_version", required: true
-      ##
-      # :attr_reader: reader_serial_number
-      # Device serial number
-      field :reader_serial_number, :string, wire: "reader_serial_number", required: true
-      ##
-      # :attr_reader: status
-      # Current status of the checkout
-      field :status, :string, wire: "status", required: true
-      ##
-      # :attr_reader: total_amount
-      # The checkout amount. The value uses two decimal places, even for currencies
-      # such as CLP that use zero decimal places in the create request.
-      #
-      # For example, EUR 10.00 is returned as `1000` and CLP 1000 as `100000`.
-      field :total_amount, [:model, "GetReaderCheckoutResponseDataTotalAmount"], wire: "total_amount", required: true
-      ##
-      # :attr_reader: updated_at
-      # Checkout last update timestamp
-      field :updated_at, :string, wire: "updated_at", required: true
-      ##
-      # :attr_reader: valid_until
-      # Checkout expiration timestamp. After this time, the checkout will be automatically cancelled.
-      field :valid_until, [:union, [:string, :nil]], wire: "valid_until", required: true
-    end
-
-    # The checkout amount. The value uses two decimal places, even for currencies
-    # such as CLP that use zero decimal places in the create request.
-    #
-    # For example, EUR 10.00 is returned as `1000` and CLP 1000 as `100000`.
-    class GetReaderCheckoutResponseDataTotalAmount < Model
-      ##
-      # :attr_reader: currency
-      # Currency ISO 4217 code
-      field :currency, :string, wire: "currency", required: true
-      ##
-      # :attr_reader: value
-      # Integer value of the amount.
-      field :value, :integer, wire: "value", required: true
-    end
-
-    # Menu lock settings reported by the reader, or the last saved settings when offline.
-    class GetReaderSettingsResponse < Model
-      ##
-      # :attr_reader: data
-      field :data, [:model, "GetReaderSettingsResponseData"], wire: "data", required: true
-    end
-
-    class GetReaderSettingsResponseData < Model
-      ##
-      # :attr_reader: menu_lock
-      # Menu lock configuration. Fields may be absent if no value is available.
-      field :menu_lock, [:model, "GetReaderSettingsResponseDataMenuLock"], wire: "menu_lock", required: true
-    end
-
-    # Menu lock configuration. Fields may be absent if no value is available.
-    class GetReaderSettingsResponseDataMenuLock < Model
-      ##
-      # :attr_reader: enabled
-      # Whether menu lock is enabled.
-      field :enabled, :boolean, wire: "enabled", required: false
-      ##
-      # :attr_reader: passcode
-      # Four-digit PIN used to unlock the reader's menu.
-      field :passcode, :string, wire: "passcode", required: false
     end
 
     # Hosted Checkout configuration. Enable it to receive a SumUp-hosted payment page URL in the checkout response.
@@ -4112,56 +3863,6 @@ module SumUp
       field :type, :string, wire: "type", required: false
     end
 
-    # Menu lock settings to update for a Solo reader.
-    class UpdateReaderSettingsRequest < Model
-      ##
-      # :attr_reader: menu_lock
-      # Menu lock configuration. Provide at least one of `enabled` or `passcode`.
-      field :menu_lock, [:model, "UpdateReaderSettingsRequestMenuLock"], wire: "menu_lock", required: true
-    end
-
-    # Menu lock configuration. Provide at least one of `enabled` or `passcode`.
-    class UpdateReaderSettingsRequestMenuLock < Model
-      ##
-      # :attr_reader: enabled
-      # Whether menu lock is enabled.
-      field :enabled, :boolean, wire: "enabled", required: false
-      ##
-      # :attr_reader: passcode
-      # Four-digit PIN used to unlock the reader's menu.
-      field :passcode, :string, wire: "passcode", required: false
-    end
-
-    # Menu lock settings applied to the reader.
-    class UpdateReaderSettingsResponse < Model
-      ##
-      # :attr_reader: data
-      field :data, [:model, "UpdateReaderSettingsResponseData"], wire: "data", required: true
-    end
-
-    class UpdateReaderSettingsResponseData < Model
-      ##
-      # :attr_reader: menu_lock
-      # Settings included in the update. Omitted fields are not returned.
-      field :menu_lock, [:model, "UpdateReaderSettingsResponseDataMenuLock"], wire: "menu_lock", required: true
-      ##
-      # :attr_reader: status
-      # Indicates that the reader applied the settings update.
-      field :status, :string, wire: "status", required: true
-    end
-
-    # Settings included in the update. Omitted fields are not returned.
-    class UpdateReaderSettingsResponseDataMenuLock < Model
-      ##
-      # :attr_reader: enabled
-      # Whether menu lock is enabled.
-      field :enabled, :boolean, wire: "enabled", required: false
-      ##
-      # :attr_reader: passcode
-      # Four-digit PIN used to unlock the reader's menu.
-      field :passcode, :string, wire: "passcode", required: false
-    end
-
     # The reader cannot complete the settings request, or the settings are invalid.
     class UpdateReaderSettingsUnprocessableEntity < Model
       ##
@@ -4265,18 +3966,6 @@ module SumUp
     # Known values; the API may return additional values.
     module CreateMerchantTokenRequestActionsItem
       CHECKOUT = "checkout"
-    end
-
-    # Known values; the API may return additional values.
-    module CreateReaderCheckoutRequestCardType
-      CREDIT = "credit"
-      DEBIT = "debit"
-    end
-
-    # Known values; the API may return additional values.
-    module CreateReaderCheckoutRequestPaymentType
-      CARD = "card"
-      PIX = "pix"
     end
 
     # Known values; the API may return additional values.
@@ -4397,20 +4086,6 @@ module SumUp
       REFUND_DEDUCTION = "REFUND_DEDUCTION"
       DD_RETURN_DEDUCTION = "DD_RETURN_DEDUCTION"
       BALANCE_DEDUCTION = "BALANCE_DEDUCTION"
-    end
-
-    # Known values; the API may return additional values.
-    module GetReaderCheckoutResponseDataPaymentType
-      CARD = "card"
-      PIX = "pix"
-    end
-
-    # Known values; the API may return additional values.
-    module GetReaderCheckoutResponseDataStatus
-      PENDING = "pending"
-      SUCCESSFUL = "successful"
-      FAILED = "failed"
-      CANCELLED = "cancelled"
     end
 
     # Known values; the API may return additional values.
@@ -4713,11 +4388,6 @@ module SumUp
     end
 
     # Known values; the API may return additional values.
-    module UpdateReaderSettingsResponseDataStatus
-      APPLIED = "applied"
-    end
-
-    # Known values; the API may return additional values.
     module UserType
       USER = "user"
       MANAGED_USER = "managed_user"
@@ -4726,3 +4396,5 @@ module SumUp
     end
   end
 end
+
+require_relative "types/readers"

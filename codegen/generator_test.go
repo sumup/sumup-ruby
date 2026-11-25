@@ -123,6 +123,15 @@ func TestExternalReferencesFail(t *testing.T) {
 		t.Fatalf("expected local reference error, got %v", err)
 	}
 }
+
+func TestScopedTypeNamespaceCollision(t *testing.T) {
+	t.Parallel()
+	g := fixture(t, `{"Readers":{"properties":{"id":{"type":"string"}}},"CreateReaderCheckoutRequest":{"properties":{"amount":{"type":"integer"}}}}`, "")
+	if _, err := g.generate(); err == nil || !strings.Contains(err.Error(), "type namespace Types::Readers conflicts with Readers") {
+		t.Fatalf("expected a namespace collision, got %v", err)
+	}
+}
+
 func TestWriteFiles(t *testing.T) {
 	t.Parallel()
 	g := fixture(t, "", "")
@@ -184,7 +193,11 @@ func TestCurrentSpec(t *testing.T) {
 		t.Fatal(err)
 	}
 	files := generatedFiles(t, g)
-	contains(t, files["sig/sumup/resources/readers/checkouts.rbs"], "body: Types::CreateReaderCheckoutRequest | Hash[Symbol | String, untyped]")
+	checkoutSignature := files["sig/sumup/resources/readers/checkouts.rbs"]
+	contains(t, checkoutSignature, "body: Types::Readers::Checkouts::CreateRequest | Hash[Symbol | String, untyped]")
+	contains(t, checkoutSignature, "-> Types::Readers::Checkouts::CreateResponse")
+	contains(t, files["sig/sumup/resources/readers/settings.rbs"], "-> Types::Readers::Settings::GetResponse")
+	contains(t, files["sig/sumup/types/readers.rbs"], "attr_reader total_amount: Types::Readers::Checkouts::CreateRequest::TotalAmount")
 	refundSignature := files["sig/sumup/resources/transactions.rbs"]
 	contains(t, refundSignature, "?body: Types::RefundTransactionRequest | Hash[Symbol | String, untyped]")
 	if strings.Contains(refundSignature, "?amount:") {
