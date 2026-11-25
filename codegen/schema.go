@@ -274,9 +274,13 @@ func (g *generator) describe(schema object, name string) descriptor {
 	if len(parts) == 1 && asObject(parts[0]).has("$ref") && len(schema.without("allOf", "title", "description", "example", "examples", "deprecated", "readOnly", "writeOnly", "default", "nullable")) == 0 {
 		return g.describe(merge(asObject(parts[0]), schema.without("allOf")), name)
 	}
-	for _, m := range g.schemas {
-		if m.key != name && equalValue(m.value, schema) && g.isObject(asObject(m.value)) {
-			return g.named(m.key)
+	// Scoped inline definitions belong to their parent model. Named references
+	// still use the referenced schema's single canonical type.
+	if !strings.Contains(name, "::") {
+		for _, m := range g.schemas {
+			if m.key != name && !strings.Contains(m.key, "::") && equalValue(m.value, schema) && g.isObject(asObject(m.value)) {
+				return g.named(m.key)
+			}
 		}
 	}
 	schema = g.merged(schema)
@@ -338,7 +342,7 @@ func (g *generator) describe(schema object, name string) descriptor {
 func (d descriptor) ruby() string {
 	switch d.kind {
 	case "model":
-		return "[:model, " + quote(d.name) + "]"
+		return "[:model, " + quote(typeConstant(d.name)) + "]"
 	case "array", "map":
 		return "[:" + d.kind + ", " + d.items[0].ruby() + "]"
 	case "union":
@@ -354,7 +358,7 @@ func (d descriptor) ruby() string {
 func (d descriptor) rbs(input bool) string {
 	switch d.kind {
 	case "model":
-		result := "Types::" + constant(d.name)
+		result := "Types::" + typeConstant(d.name)
 		if input {
 			result += " | Hash[Symbol | String, untyped]"
 		}

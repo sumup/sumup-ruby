@@ -224,40 +224,6 @@ module SumUp
       attr_reader detail: (String)?
       attr_reader type: String
     end
-    class CreateReaderCheckoutRequest < Model
-      attr_reader aade: (Types::CreateReaderCheckoutRequestAade)?
-      attr_reader affiliate: ((Types::CreateReaderCheckoutRequestAffiliate | nil))?
-      attr_reader card_type: (String)?
-      attr_reader description: (String)?
-      attr_reader installments: ((Integer | nil))?
-      attr_reader payment_type: (String)?
-      attr_reader return_url: (String)?
-      attr_reader tip_rates: (Array[Numeric])?
-      attr_reader tip_timeout: (Integer)?
-      attr_reader total_amount: Types::CreateReaderCheckoutRequestTotalAmount
-    end
-    class CreateReaderCheckoutRequestAade < Model
-      attr_reader provider_id: String
-      attr_reader signature: String
-      attr_reader signature_data: String
-    end
-    class CreateReaderCheckoutRequestAffiliate < Model
-      attr_reader app_id: String
-      attr_reader foreign_transaction_id: (String)?
-      attr_reader key: String
-      attr_reader tags: (Hash[String, untyped])?
-    end
-    class CreateReaderCheckoutRequestTotalAmount < Model
-      attr_reader currency: String
-      attr_reader value: Integer
-    end
-    class CreateReaderCheckoutResponse < Model
-      attr_reader data: Types::CreateReaderCheckoutResponseData
-    end
-    class CreateReaderCheckoutResponseData < Model
-      attr_reader checkout_id: (String)?
-      attr_reader client_transaction_id: String
-    end
     class CreateReaderCheckoutUnprocessableEntity < Model
       attr_reader errors: Hash[String, untyped]
     end
@@ -408,39 +374,6 @@ module SumUp
     end
     class GetPaymentMethodsResponseAvailablePaymentMethodsItem < Model
       attr_reader id: String
-    end
-    class GetReaderCheckoutResponse < Model
-      attr_reader data: Types::GetReaderCheckoutResponseData
-    end
-    class GetReaderCheckoutResponseData < Model
-      attr_reader card_type: (String | nil)
-      attr_reader checkout_id: String
-      attr_reader client_transaction_id: String
-      attr_reader created_at: String
-      attr_reader installments: (Integer | nil)
-      attr_reader payment_failure_reason: (String | nil)
-      attr_reader payment_status: (String | nil)
-      attr_reader payment_type: String
-      attr_reader reader_firmware_version: String
-      attr_reader reader_serial_number: String
-      attr_reader status: String
-      attr_reader total_amount: Types::GetReaderCheckoutResponseDataTotalAmount
-      attr_reader updated_at: String
-      attr_reader valid_until: (String | nil)
-    end
-    class GetReaderCheckoutResponseDataTotalAmount < Model
-      attr_reader currency: String
-      attr_reader value: Integer
-    end
-    class GetReaderSettingsResponse < Model
-      attr_reader data: Types::GetReaderSettingsResponseData
-    end
-    class GetReaderSettingsResponseData < Model
-      attr_reader menu_lock: Types::GetReaderSettingsResponseDataMenuLock
-    end
-    class GetReaderSettingsResponseDataMenuLock < Model
-      attr_reader enabled: (bool)?
-      attr_reader passcode: (String)?
     end
     class HostedCheckout < Model
       attr_reader enabled: bool
@@ -1180,24 +1113,6 @@ module SumUp
       attr_reader detail: String
       attr_reader type: (String)?
     end
-    class UpdateReaderSettingsRequest < Model
-      attr_reader menu_lock: Types::UpdateReaderSettingsRequestMenuLock
-    end
-    class UpdateReaderSettingsRequestMenuLock < Model
-      attr_reader enabled: (bool)?
-      attr_reader passcode: (String)?
-    end
-    class UpdateReaderSettingsResponse < Model
-      attr_reader data: Types::UpdateReaderSettingsResponseData
-    end
-    class UpdateReaderSettingsResponseData < Model
-      attr_reader menu_lock: Types::UpdateReaderSettingsResponseDataMenuLock
-      attr_reader status: String
-    end
-    class UpdateReaderSettingsResponseDataMenuLock < Model
-      attr_reader enabled: (bool)?
-      attr_reader passcode: (String)?
-    end
     class UpdateReaderSettingsUnprocessableEntity < Model
       attr_reader errors: Hash[String, untyped]
     end
@@ -1282,14 +1197,6 @@ module SumUp
     end
     module CreateMerchantTokenRequestActionsItem
       CHECKOUT: String
-    end
-    module CreateReaderCheckoutRequestCardType
-      CREDIT: String
-      DEBIT: String
-    end
-    module CreateReaderCheckoutRequestPaymentType
-      CARD: String
-      PIX: String
     end
     module Currency
       BRL: String
@@ -1390,16 +1297,6 @@ module SumUp
       REFUND_DEDUCTION: String
       DD_RETURN_DEDUCTION: String
       BALANCE_DEDUCTION: String
-    end
-    module GetReaderCheckoutResponseDataPaymentType
-      CARD: String
-      PIX: String
-    end
-    module GetReaderCheckoutResponseDataStatus
-      PENDING: String
-      SUCCESSFUL: String
-      FAILED: String
-      CANCELLED: String
     end
     module MandatePayloadType
       RECURRENT: String
@@ -1625,9 +1522,6 @@ module SumUp
     module UnauthorizedErrorsType
       INVALID_ACCESS_TOKEN: String
       INVALID_PASSWORD: String
-    end
-    module UpdateReaderSettingsResponseDataStatus
-      APPLIED: String
     end
     module UserType
       USER: String

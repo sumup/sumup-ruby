@@ -24,6 +24,34 @@ class ClientTest < Minitest::Test
     assert_equal({"valid_until" => nil}, JSON.parse(@transport.requests.last.body))
   end
 
+  def test_reader_checkout_uses_scoped_request_and_response_models
+    client = build_client(json_response({"data" => {"client_transaction_id" => "transaction_1"}}, status: 201))
+    types = SumUp::Types::Readers::Checkouts
+    body = types::CreateRequest.new(total_amount: {currency: "EUR", value: 1999})
+
+    result = client.readers.checkouts.create(merchant_code: "M123", reader_id: "r1", body: body)
+
+    assert_instance_of types::CreateRequest::TotalAmount, body.total_amount
+    assert_equal({"total_amount" => {"currency" => "EUR", "value" => 1999}}, JSON.parse(@transport.requests.last.body))
+    assert_instance_of types::CreateResponse, result
+    assert_instance_of types::CreateResponse::Data, result.data
+    assert_equal "transaction_1", result.data.client_transaction_id
+  end
+
+  def test_reader_settings_update_uses_scoped_models_with_response_metadata
+    client = build_client(json_response({"data" => {"menu_lock" => {"enabled" => false}, "status" => "SUCCESS"}}))
+    types = SumUp::Types::Readers::Settings
+    body = types::UpdateRequest.new(menu_lock: {enabled: false})
+
+    response = client.readers.settings.update_with_response(merchant_code: "M123", reader_id: "r1", body: body)
+
+    assert_equal({"menu_lock" => {"enabled" => false}}, JSON.parse(@transport.requests.last.body))
+    assert_equal 200, response.status
+    assert_instance_of types::UpdateResponse, response.data
+    assert_instance_of types::UpdateResponse::Data::MenuLock, response.data.data.menu_lock
+    assert_equal false, response.data.data.menu_lock.enabled
+  end
+
   def test_body_keywords_are_rejected
     client = build_client
     [:refund, :refund_with_response].each do |method|

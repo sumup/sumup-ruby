@@ -22,7 +22,7 @@ versions. Use `bundle update` when validating an update against current releases
 | --- | --- |
 | `openapi.json` | Checked-in input from `sumup/apis/specs/openapi31.json` |
 | `codegen/` | Separate Go module for API methods, models, signatures, events, samples, and generator tests |
-| `lib/sumup/resources/`, `lib/sumup/types.rb` | Generated API surface |
+| `lib/sumup/resources/`, `lib/sumup/types.rb`, `lib/sumup/types/` | Generated resources, shared models, and scoped models |
 | `lib/sumup/event_types.rb` | Generated event-to-resource mapping |
 | `lib/sumup/client.rb`, `transport.rb`, `model.rb`, `events.rb`, `pagination.rb` | Shared runtime |
 | `sig/` | Shipped RBS signatures; generated API signatures and handwritten runtime signatures |

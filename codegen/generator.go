@@ -262,11 +262,11 @@ func (g *generator) generate() (map[string]string, error) {
 		m := g.schemas[i]
 		if g.isObject(asObject(m.value)) {
 			for _, p := range g.properties(asObject(m.value)) {
-				g.describe(asObject(p.value), m.key+constant(p.key))
+				g.describe(asObject(p.value), propertyTypeName(m.key, p.key))
 			}
 		}
 	}
-	types, err := g.renderTypes()
+	files, err := g.renderTypeFiles()
 	if err != nil {
 		return nil, err
 	}
@@ -287,83 +287,13 @@ func (g *generator) generate() (map[string]string, error) {
 			children[parent] = append(children[parent], tag)
 		}
 	}
-	files := map[string]string{"lib/sumup/types.rb": types, "sig/sumup/types.rbs": g.renderTypesRBS(), "lib/sumup/resources.rb": g.renderIndex(tags), "lib/sumup/event_types.rb": g.renderEvents(), "sig/sumup/events.rbs": g.renderEventsRBS()}
+	files["lib/sumup/resources.rb"] = g.renderIndex(tags)
+	files["lib/sumup/event_types.rb"] = g.renderEvents()
+	files["sig/sumup/events.rbs"] = g.renderEventsRBS()
 	for _, tag := range tags {
 		stem := g.resourceFileStem(tag)
 		files["lib/sumup/resources/"+stem+".rb"] = g.renderResource(tag, operations[tag], children[tag])
 		files["sig/sumup/resources/"+stem+".rbs"] = g.renderResourceRBS(tag, operations[tag], children[tag])
 	}
 	return files, nil
-}
-func (g *generator) renderTypes() (string, error) {
-	var b strings.Builder
-	b.WriteString(header + "module SumUp\n  module Types\n")
-	for _, m := range sortedMembers(g.schemas) {
-		schema := asObject(m.value)
-		if !g.isObject(schema) {
-			continue
-		}
-		b.WriteString(comment(asString(schema.get("description")), "    "))
-		fmt.Fprintf(&b, "    class %s < Model\n", constant(m.key))
-		used := map[string]bool{}
-		for _, p := range g.properties(schema) {
-			name := fieldName(p.key)
-			if used[name] {
-				return "", fmt.Errorf("conflicting model field names in %s", m.key)
-			}
-			used[name] = true
-			fmt.Fprintf(&b, "      ##\n      # :attr_reader: %s\n", name)
-			b.WriteString(comment(asString(asObject(p.value).get("description")), "      "))
-			required := slices.Contains(stringsOf(g.merged(schema).get("required")), p.key)
-			fmt.Fprintf(&b, "      field :%s, %s, wire: %s, required: %t\n", name, g.describe(asObject(p.value), m.key+constant(p.key)).ruby(), quote(p.key), required)
-		}
-		b.WriteString("    end\n\n")
-	}
-	for _, name := range slices.Sorted(maps.Keys(g.enums)) {
-		if g.schemas.has(name) && g.isObject(asObject(g.schemas.get(name))) {
-			continue
-		}
-		fmt.Fprintf(&b, "    # Known values; the API may return additional values.\n    module %s\n", constant(name))
-		used := map[string]bool{}
-		for _, value := range g.enums[name] {
-			key := enumKey(value)
-			if used[key] {
-				return "", fmt.Errorf("duplicate enum constant %s::%s", name, key)
-			}
-			used[key] = true
-			fmt.Fprintf(&b, "      %s = %s\n", key, quote(value))
-		}
-		b.WriteString("    end\n\n")
-	}
-	return strings.TrimRight(b.String(), "\n") + "\n  end\nend\n", nil
-}
-func (g *generator) renderTypesRBS() string {
-	var b strings.Builder
-	b.WriteString(generated + "module SumUp\n  module Types\n")
-	for _, m := range sortedMembers(g.schemas) {
-		schema := asObject(m.value)
-		if !g.isObject(schema) {
-			continue
-		}
-		fmt.Fprintf(&b, "    class %s < Model\n", constant(m.key))
-		for _, p := range g.properties(schema) {
-			typ := g.describe(asObject(p.value), m.key+constant(p.key)).rbs(false)
-			if !slices.Contains(stringsOf(g.merged(schema).get("required")), p.key) {
-				typ = "(" + typ + ")?"
-			}
-			fmt.Fprintf(&b, "      attr_reader %s: %s\n", fieldName(p.key), typ)
-		}
-		b.WriteString("    end\n")
-	}
-	for _, name := range slices.Sorted(maps.Keys(g.enums)) {
-		if g.schemas.has(name) && g.isObject(asObject(g.schemas.get(name))) {
-			continue
-		}
-		fmt.Fprintf(&b, "    module %s\n", constant(name))
-		for _, v := range g.enums[name] {
-			fmt.Fprintf(&b, "      %s: String\n", enumKey(v))
-		}
-		b.WriteString("    end\n")
-	}
-	return b.String() + "  end\nend\n"
 }
