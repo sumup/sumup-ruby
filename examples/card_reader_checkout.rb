@@ -3,11 +3,11 @@
 require "sumup"
 
 client = SumUp::Client.new(api_key: ENV.fetch("SUMUP_API_KEY"))
-result = client.readers.create_checkout(
+result = client.readers.checkouts.create(
   merchant_code: ENV.fetch("SUMUP_MERCHANT_CODE"),
   reader_id: ENV.fetch("SUMUP_READER_ID"),
   body: {
-    total_amount: {currency: "EUR", minor_unit: 2, value: 1999},
+    total_amount: {currency: "EUR", value: 1999},
     description: "Ruby SDK example"
   }
 )

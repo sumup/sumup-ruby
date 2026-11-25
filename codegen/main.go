@@ -111,12 +111,21 @@ func encode(value any) ([]byte, error) {
 }
 func writeFiles(root string, files map[string]string, check bool) error {
 	var stale []string
-	for _, pattern := range []string{"lib/sumup/resources/*.rb", "sig/sumup/resources/*.rbs"} {
-		paths, err := filepath.Glob(filepath.Join(root, filepath.FromSlash(pattern)))
-		if err != nil {
-			return fmt.Errorf("find generated files: %w", err)
-		}
-		for _, path := range paths {
+	for _, resource := range []struct{ dir, ext string }{
+		{"lib/sumup/resources", ".rb"},
+		{"sig/sumup/resources", ".rbs"},
+	} {
+		dir := filepath.Join(root, filepath.FromSlash(resource.dir))
+		err := filepath.WalkDir(dir, func(path string, entry os.DirEntry, err error) error {
+			if path == dir && errors.Is(err, os.ErrNotExist) {
+				return nil
+			}
+			if err != nil {
+				return err
+			}
+			if entry.IsDir() || filepath.Ext(path) != resource.ext {
+				return nil
+			}
 			relative, err := filepath.Rel(root, path)
 			if err != nil {
 				return err
@@ -124,6 +133,10 @@ func writeFiles(root string, files map[string]string, check bool) error {
 			if _, ok := files[filepath.ToSlash(relative)]; !ok {
 				stale = append(stale, path)
 			}
+			return nil
+		})
+		if err != nil {
+			return fmt.Errorf("find generated files: %w", err)
 		}
 	}
 	changed := []string{}
@@ -143,11 +156,6 @@ func writeFiles(root string, files map[string]string, check bool) error {
 		}
 		return nil
 	}
-	for _, path := range stale {
-		if err := os.Remove(path); err != nil {
-			return fmt.Errorf("remove stale file: %w", err)
-		}
-	}
 	for _, name := range slices.Sorted(maps.Keys(files)) {
 		path := filepath.Join(root, filepath.FromSlash(name))
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
@@ -155,6 +163,11 @@ func writeFiles(root string, files map[string]string, check bool) error {
 		}
 		if err := os.WriteFile(path, []byte(files[name]), 0o644); err != nil {
 			return fmt.Errorf("write generated file: %w", err)
+		}
+	}
+	for _, path := range stale {
+		if err := os.Remove(path); err != nil {
+			return fmt.Errorf("remove stale file: %w", err)
 		}
 	}
 	return nil

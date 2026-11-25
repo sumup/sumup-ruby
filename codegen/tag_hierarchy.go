@@ -37,3 +37,10 @@ func (g *generator) resourcePath(tag string) string {
 	}
 	return snake(tag)
 }
+
+func (g *generator) resourceFileStem(tag string) string {
+	if parent := g.parents[tag]; parent != "" {
+		return g.resourceFileStem(parent) + "/" + g.childNames[tag]
+	}
+	return snake(tag)
+}

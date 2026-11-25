@@ -66,11 +66,11 @@ Use a paired reader and the credentials required by the
 [Cloud API](https://developer.sumup.com/terminal-payments/cloud-api/):
 
 ```ruby
-result = client.readers.create_checkout(
+result = client.readers.checkouts.create(
   merchant_code: ENV.fetch("SUMUP_MERCHANT_CODE"),
   reader_id: ENV.fetch("SUMUP_READER_ID"),
   body: {
-    total_amount: {currency: "EUR", minor_unit: 2, value: 1999},
+    total_amount: {currency: "EUR", value: 1999},
     description: "Order 1234"
   }
 )

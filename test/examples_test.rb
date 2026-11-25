@@ -25,7 +25,7 @@ class ExamplesTest < Minitest::Test
   def test_reader_checkout_example
     output = run_example("card_reader_checkout", json_response({"data" => {"client_transaction_id" => "transaction-1"}}, status: 201))
     assert_includes output, "Reader checkout started: transaction-1"
-    assert_equal({"currency" => "EUR", "minor_unit" => 2, "value" => 1999}, JSON.parse(@transport.requests.last.body).fetch("total_amount"))
+    assert_equal({"currency" => "EUR", "value" => 1999}, JSON.parse(@transport.requests.last.body).fetch("total_amount"))
   end
 
   def test_rack_example_rejects_invalid_requests_and_processes_verified_events
