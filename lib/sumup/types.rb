@@ -802,11 +802,10 @@ module SumUp
       field :tip_timeout, :integer, wire: "tip_timeout", required: false
       ##
       # :attr_reader: total_amount
-      # Amount structure.
+      # Amount to charge in minor units. Use the decimal places for the currency.
+      # CLP, COP, and HUF use zero decimal places.
       #
-      # The amount is represented as an integer value altogether with the currency and the minor unit.
-      #
-      # For example, EUR 1.00 is represented as value 100 with minor unit of 2.
+      # For example, send `1234` for EUR 12.34 or `1000` for CLP 1000.
       field :total_amount, [:model, "CreateReaderCheckoutRequestTotalAmount"], wire: "total_amount", required: true
     end
 
@@ -851,21 +850,15 @@ module SumUp
       field :tags, [:map, :any], wire: "tags", required: false
     end
 
-    # Amount structure.
+    # Amount to charge in minor units. Use the decimal places for the currency.
+    # CLP, COP, and HUF use zero decimal places.
     #
-    # The amount is represented as an integer value altogether with the currency and the minor unit.
-    #
-    # For example, EUR 1.00 is represented as value 100 with minor unit of 2.
+    # For example, send `1234` for EUR 12.34 or `1000` for CLP 1000.
     class CreateReaderCheckoutRequestTotalAmount < Model
       ##
       # :attr_reader: currency
       # Currency ISO 4217 code
       field :currency, :string, wire: "currency", required: true
-      ##
-      # :attr_reader: minor_unit
-      # The minor units of the currency.
-      # It represents the number of decimals of the currency. For the currencies CLP, COP and HUF, the minor unit is 0.
-      field :minor_unit, :integer, wire: "minor_unit", required: true
       ##
       # :attr_reader: value
       # Integer value of the amount.
@@ -1445,12 +1438,11 @@ module SumUp
       field :status, :string, wire: "status", required: true
       ##
       # :attr_reader: total_amount
-      # Amount structure.
+      # The checkout amount. The value uses two decimal places, even for currencies
+      # such as CLP that use zero decimal places in the create request.
       #
-      # The amount is represented as an integer value altogether with the currency and the minor unit.
-      #
-      # For example, EUR 1.00 is represented as value 100 with minor unit of 2.
-      field :total_amount, [:model, "CreateReaderCheckoutRequestTotalAmount"], wire: "total_amount", required: true
+      # For example, EUR 10.00 is returned as `1000` and CLP 1000 as `100000`.
+      field :total_amount, [:model, "GetReaderCheckoutResponseDataTotalAmount"], wire: "total_amount", required: true
       ##
       # :attr_reader: updated_at
       # Checkout last update timestamp
@@ -1459,6 +1451,21 @@ module SumUp
       # :attr_reader: valid_until
       # Checkout expiration timestamp. After this time, the checkout will be automatically cancelled.
       field :valid_until, [:union, [:string, :nil]], wire: "valid_until", required: true
+    end
+
+    # The checkout amount. The value uses two decimal places, even for currencies
+    # such as CLP that use zero decimal places in the create request.
+    #
+    # For example, EUR 10.00 is returned as `1000` and CLP 1000 as `100000`.
+    class GetReaderCheckoutResponseDataTotalAmount < Model
+      ##
+      # :attr_reader: currency
+      # Currency ISO 4217 code
+      field :currency, :string, wire: "currency", required: true
+      ##
+      # :attr_reader: value
+      # Integer value of the amount.
+      field :value, :integer, wire: "value", required: true
     end
 
     # Menu lock settings reported by the reader, or the last saved settings when offline.
@@ -4177,6 +4184,7 @@ module SumUp
       ALELO = "ALELO"
       AMEX = "AMEX"
       BANCOMAT = "BANCOMAT"
+      CARNET = "CARNET"
       CONECS = "CONECS"
       CUP = "CUP"
       DINERS = "DINERS"

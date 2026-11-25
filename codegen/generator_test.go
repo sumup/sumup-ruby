@@ -70,7 +70,9 @@ func TestNestedResources(t *testing.T) {
 	if strings.Contains(parent, "def create(") {
 		t.Error("checkout operation is only available on the nested client")
 	}
-	contains(t, files["lib/sumup/resources/reader_checkouts.rb"], "def create(")
+	contains(t, files["lib/sumup/resources/readers/checkouts.rb"], "def create(")
+	contains(t, files["lib/sumup/resources.rb"], `require_relative "resources/readers/checkouts"`)
+	contains(t, files["sig/sumup/resources/readers/checkouts.rbs"], "class ReaderCheckouts < Resource")
 	contains(t, files["sig/sumup/resources/readers.rbs"], "def checkouts: () -> ReaderCheckouts")
 	if got := g.resourcePath("ReaderCheckouts"); got != "readers.checkouts" {
 		t.Fatalf("wrong sample resource path %q", got)
@@ -144,7 +146,10 @@ func TestWriteFiles(t *testing.T) {
 	if err := writeFiles(root, files, true); err != nil {
 		t.Fatal(err)
 	}
-	stale := filepath.Join(root, "lib", "sumup", "resources", "stale.rb")
+	stale := filepath.Join(root, "lib", "sumup", "resources", "readers", "stale.rb")
+	if err := os.MkdirAll(filepath.Dir(stale), 0o755); err != nil {
+		t.Fatal(err)
+	}
 	if err := os.WriteFile(stale, []byte("stale"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -179,7 +184,7 @@ func TestCurrentSpec(t *testing.T) {
 		t.Fatal(err)
 	}
 	files := generatedFiles(t, g)
-	contains(t, files["sig/sumup/resources/readers.rbs"], "body: Types::CreateReaderCheckoutRequest | Hash[Symbol | String, untyped]")
+	contains(t, files["sig/sumup/resources/readers/checkouts.rbs"], "body: Types::CreateReaderCheckoutRequest | Hash[Symbol | String, untyped]")
 	refundSignature := files["sig/sumup/resources/transactions.rbs"]
 	contains(t, refundSignature, "?body: Types::RefundTransactionRequest | Hash[Symbol | String, untyped]")
 	if strings.Contains(refundSignature, "?amount:") {

@@ -289,8 +289,9 @@ func (g *generator) generate() (map[string]string, error) {
 	}
 	files := map[string]string{"lib/sumup/types.rb": types, "sig/sumup/types.rbs": g.renderTypesRBS(), "lib/sumup/resources.rb": g.renderIndex(tags), "lib/sumup/event_types.rb": g.renderEvents(), "sig/sumup/events.rbs": g.renderEventsRBS()}
 	for _, tag := range tags {
-		files["lib/sumup/resources/"+snake(tag)+".rb"] = g.renderResource(tag, operations[tag], children[tag])
-		files["sig/sumup/resources/"+snake(tag)+".rbs"] = g.renderResourceRBS(tag, operations[tag], children[tag])
+		stem := g.resourceFileStem(tag)
+		files["lib/sumup/resources/"+stem+".rb"] = g.renderResource(tag, operations[tag], children[tag])
+		files["sig/sumup/resources/"+stem+".rbs"] = g.renderResourceRBS(tag, operations[tag], children[tag])
 	}
 	return files, nil
 }

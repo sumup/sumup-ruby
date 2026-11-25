@@ -99,7 +99,7 @@ func (g *generator) renderIndex(tags []string) string {
 	var b strings.Builder
 	b.WriteString(header)
 	for _, tag := range tags {
-		fmt.Fprintf(&b, "require_relative \"resources/%s\"\n", snake(tag))
+		fmt.Fprintf(&b, "require_relative \"resources/%s\"\n", g.resourceFileStem(tag))
 	}
 	b.WriteString("\nmodule SumUp\n  class Client\n    RESOURCES = {\n")
 	entries := []string{}

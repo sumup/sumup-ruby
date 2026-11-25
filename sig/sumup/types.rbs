@@ -249,7 +249,6 @@ module SumUp
     end
     class CreateReaderCheckoutRequestTotalAmount < Model
       attr_reader currency: String
-      attr_reader minor_unit: Integer
       attr_reader value: Integer
     end
     class CreateReaderCheckoutResponse < Model
@@ -425,9 +424,13 @@ module SumUp
       attr_reader reader_firmware_version: String
       attr_reader reader_serial_number: String
       attr_reader status: String
-      attr_reader total_amount: Types::CreateReaderCheckoutRequestTotalAmount
+      attr_reader total_amount: Types::GetReaderCheckoutResponseDataTotalAmount
       attr_reader updated_at: String
       attr_reader valid_until: (String | nil)
+    end
+    class GetReaderCheckoutResponseDataTotalAmount < Model
+      attr_reader currency: String
+      attr_reader value: Integer
     end
     class GetReaderSettingsResponse < Model
       attr_reader data: Types::GetReaderSettingsResponseData
@@ -1210,6 +1213,7 @@ module SumUp
       ALELO: String
       AMEX: String
       BANCOMAT: String
+      CARNET: String
       CONECS: String
       CUP: String
       DINERS: String

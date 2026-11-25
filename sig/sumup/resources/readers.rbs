@@ -6,6 +6,8 @@ module SumUp
   end
   module Resources
     class Readers < Resource
+      def checkouts: () -> ReaderCheckouts
+      def settings: () -> ReaderSettings
       def create_go_checkout: (merchant_code: String, reader_id: String, body: Types::ReaderPaymentRequestParams | Hash[Symbol | String, untyped], ?options: request_options) -> Types::ReaderPaymentResponse
       def create_go_checkout_with_response: (merchant_code: String, reader_id: String, body: Types::ReaderPaymentRequestParams | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::ReaderPaymentResponse]
       def list: (merchant_code: String, ?options: request_options) -> Types::ListReadersResponse
@@ -18,18 +20,8 @@ module SumUp
       def delete_with_response: (merchant_code: String, reader_id: String, ?options: request_options) -> Response[nil]
       def update: (merchant_code: String, reader_id: String, body: Types::UpdateReaderRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Types::Reader
       def update_with_response: (merchant_code: String, reader_id: String, body: Types::UpdateReaderRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::Reader]
-      def create_checkout: (merchant_code: String, reader_id: String, body: Types::CreateReaderCheckoutRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Types::CreateReaderCheckoutResponse
-      def create_checkout_with_response: (merchant_code: String, reader_id: String, body: Types::CreateReaderCheckoutRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::CreateReaderCheckoutResponse]
       def get_status: (merchant_code: String, reader_id: String, ?options: request_options) -> Types::StatusResponse
       def get_status_with_response: (merchant_code: String, reader_id: String, ?options: request_options) -> Response[Types::StatusResponse]
-      def get_reader_settings: (merchant_code: String, reader_id: String, ?options: request_options) -> Types::GetReaderSettingsResponse
-      def get_reader_settings_with_response: (merchant_code: String, reader_id: String, ?options: request_options) -> Response[Types::GetReaderSettingsResponse]
-      def update_reader_settings: (merchant_code: String, reader_id: String, body: Types::UpdateReaderSettingsRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Types::UpdateReaderSettingsResponse
-      def update_reader_settings_with_response: (merchant_code: String, reader_id: String, body: Types::UpdateReaderSettingsRequest | Hash[Symbol | String, untyped], ?options: request_options) -> Response[Types::UpdateReaderSettingsResponse]
-      def terminate_checkout: (merchant_code: String, reader_id: String, ?body: untyped, ?options: request_options) -> untyped
-      def terminate_checkout_with_response: (merchant_code: String, reader_id: String, ?body: untyped, ?options: request_options) -> Response[untyped]
-      def get_checkout: (merchant_code: String, reader_id: String, checkout_id: String, ?options: request_options) -> Types::GetReaderCheckoutResponse
-      def get_checkout_with_response: (merchant_code: String, reader_id: String, checkout_id: String, ?options: request_options) -> Response[Types::GetReaderCheckoutResponse]
     end
   end
 end
